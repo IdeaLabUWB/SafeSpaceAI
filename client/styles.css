@@ -1,0 +1,372 @@
+/* SafeSpace AI Dashboard - Mindful Pastel Color Palette */
+
+:root {
+    /* Mindful Pastel Color Palette */
+    --primary-sage: #A8C8A8;
+    --primary-lavender: #B8A8D8;
+    --primary-peach: #F5C6A8;
+    --primary-mint: #A8D8C8;
+    --primary-blush: #F5A8C6;
+    
+    /* Neutral tones */
+    --soft-white: #FEFEFE;
+    --warm-gray: #F5F5F5;
+    --medium-gray: #E8E8E8;
+    --text-gray: #6B6B6B;
+    --dark-gray: #4A4A4A;
+    
+    /* Accent colors */
+    --accent-green: #7FB069;
+    --accent-blue: #7BA7BC;
+    --accent-purple: #9B7BB8;
+    
+    /* Shadows and borders */
+    --soft-shadow: 0 4px 20px rgba(168, 200, 168, 0.15);
+    --card-shadow: 0 2px 12px rgba(168, 200, 168, 0.1);
+    --border-radius: 16px;
+    --border-radius-small: 8px;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: linear-gradient(135deg, var(--soft-white) 0%, var(--warm-gray) 100%);
+    color: var(--dark-gray);
+    line-height: 1.6;
+    min-height: 100vh;
+}
+
+.dashboard-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* Header Styles */
+.dashboard-header {
+    text-align: center;
+    margin-bottom: 40px;
+    padding: 30px 0;
+}
+
+.header-content {
+    background: linear-gradient(135deg, var(--primary-sage) 0%, var(--primary-mint) 100%);
+    border-radius: var(--border-radius);
+    padding: 40px 20px;
+    box-shadow: var(--soft-shadow);
+}
+
+.app-title {
+    font-size: 3rem;
+    font-weight: 600;
+    color: var(--soft-white);
+    margin-bottom: 10px;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.app-subtitle {
+    font-size: 1.2rem;
+    color: var(--soft-white);
+    opacity: 0.9;
+    font-weight: 300;
+}
+
+/* Dashboard Grid */
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 24px;
+    margin-bottom: 40px;
+}
+
+/* Card Styles */
+.dashboard-card {
+    background: var(--soft-white);
+    border-radius: var(--border-radius);
+    padding: 24px;
+    box-shadow: var(--card-shadow);
+    border: 1px solid var(--medium-gray);
+    transition: all 0.3s ease;
+}
+
+.dashboard-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--soft-shadow);
+}
+
+.card-header {
+    margin-bottom: 20px;
+}
+
+.card-header h2 {
+    font-size: 1.4rem;
+    font-weight: 500;
+    color: var(--dark-gray);
+    margin-bottom: 8px;
+}
+
+/* Welcome Card */
+.welcome-card {
+    background: linear-gradient(135deg, var(--primary-lavender) 0%, var(--primary-blush) 100%);
+    color: var(--soft-white);
+}
+
+.welcome-card .card-header h2 {
+    color: var(--soft-white);
+}
+
+.mood-indicator {
+    margin-top: 16px;
+}
+
+.mood-text {
+    display: block;
+    margin-bottom: 16px;
+    font-size: 1rem;
+    opacity: 0.9;
+}
+
+.mood-buttons {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.mood-btn {
+    background: rgba(255, 255, 255, 0.2);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    font-size: 1.5rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+}
+
+.mood-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: scale(1.1);
+}
+
+.mood-btn.selected {
+    background: rgba(255, 255, 255, 0.4);
+    border-color: rgba(255, 255, 255, 0.6);
+}
+
+/* Action Buttons */
+.action-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.action-btn {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 20px;
+    border: none;
+    border-radius: var(--border-radius-small);
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    color: var(--dark-gray);
+}
+
+.action-btn.primary {
+    background: linear-gradient(135deg, var(--accent-green) 0%, var(--primary-sage) 100%);
+    color: var(--soft-white);
+}
+
+.action-btn.secondary {
+    background: var(--warm-gray);
+    border: 1px solid var(--medium-gray);
+}
+
+.action-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.btn-icon {
+    font-size: 1.2rem;
+}
+
+/* Progress Stats */
+.progress-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+}
+
+.stat-item {
+    text-align: center;
+    padding: 16px;
+    background: var(--warm-gray);
+    border-radius: var(--border-radius-small);
+}
+
+.stat-number {
+    font-size: 2rem;
+    font-weight: 600;
+    color: var(--accent-green);
+    margin-bottom: 4px;
+}
+
+.stat-label {
+    font-size: 0.9rem;
+    color: var(--text-gray);
+    font-weight: 400;
+}
+
+/* Activity List */
+.activity-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.activity-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    background: var(--warm-gray);
+    border-radius: var(--border-radius-small);
+}
+
+.activity-icon {
+    font-size: 1.5rem;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--primary-peach);
+    border-radius: 50%;
+}
+
+.activity-title {
+    font-weight: 500;
+    color: var(--dark-gray);
+}
+
+.activity-time {
+    font-size: 0.9rem;
+    color: var(--text-gray);
+}
+
+/* Resource Links */
+.resource-links {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.resource-link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    background: var(--warm-gray);
+    border-radius: var(--border-radius-small);
+    text-decoration: none;
+    color: var(--dark-gray);
+    transition: all 0.3s ease;
+}
+
+.resource-link:hover {
+    background: var(--primary-mint);
+    transform: translateX(4px);
+}
+
+.resource-icon {
+    font-size: 1.2rem;
+}
+
+/* Emergency Card */
+.emergency-card {
+    background: linear-gradient(135deg, var(--primary-peach) 0%, var(--primary-blush) 100%);
+    color: var(--dark-gray);
+}
+
+.emergency-text {
+    margin-bottom: 16px;
+    font-weight: 500;
+}
+
+.emergency-contacts {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.emergency-btn {
+    display: block;
+    padding: 12px 16px;
+    background: var(--soft-white);
+    border-radius: var(--border-radius-small);
+    text-decoration: none;
+    color: var(--dark-gray);
+    font-weight: 500;
+    text-align: center;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.emergency-btn:hover {
+    background: rgba(255, 255, 255, 0.9);
+    transform: translateY(-1px);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .dashboard-container {
+        padding: 16px;
+    }
+    
+    .app-title {
+        font-size: 2.5rem;
+    }
+    
+    .app-subtitle {
+        font-size: 1rem;
+    }
+    
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+    
+    .progress-stats {
+        grid-template-columns: 1fr;
+    }
+    
+    .mood-buttons {
+        justify-content: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .app-title {
+        font-size: 2rem;
+    }
+    
+    .dashboard-card {
+        padding: 20px;
+    }
+    
+    .mood-btn {
+        width: 45px;
+        height: 45px;
+        font-size: 1.3rem;
+    }
+}

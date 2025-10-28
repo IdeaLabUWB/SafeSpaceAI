@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SafeSpace AI - Chat</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="chat.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Chat Container -->
+    <div class="chat-container" id="chatContainer">
+        <!-- Chat Header -->
+        <div class="chat-header">
+            <div class="chat-header-content">
+                <div class="chat-title-section">
+                    <button class="back-btn" id="backBtn">
+                        <span class="back-icon">←</span>
+                    </button>
+                    <div class="chat-title">
+                        <h1>SafeSpace AI</h1>
+                        <p class="chat-subtitle">Your mindful companion</p>
+                    </div>
+                </div>
+                <div class="chat-status">
+                    <div class="status-indicator">
+                        <div class="status-dot"></div>
+                        <span class="status-text">Online</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chat Messages Area -->
+        <div class="chat-messages" id="chatMessages">
+            <!-- Welcome Message -->
+            <div class="message bot-message welcome-message">
+                <div class="message-avatar">
+                    <div class="avatar-icon">🤖</div>
+                </div>
+                <div class="message-content">
+                    <div class="message-bubble">
+                        <p>Hello! I'm SafeSpace AI, your mindful companion. I'm here to help you through moments of anxiety and stress. How are you feeling today?</p>
+                    </div>
+                    <div class="message-time">Just now</div>
+                </div>
+            </div>
+
+            <!-- Quick Response Buttons -->
+            <div class="quick-responses">
+                <button class="quick-response-btn" data-response="I'm feeling anxious">
+                    😰 I'm feeling anxious
+                </button>
+                <button class="quick-response-btn" data-response="I need help calming down">
+                    🧘 I need help calming down
+                </button>
+                <button class="quick-response-btn" data-response="I'm having a panic attack">
+                    😵 I'm having a panic attack
+                </button>
+                <button class="quick-response-btn" data-response="I just want to talk">
+                    💬 I just want to talk
+                </button>
+            </div>
+        </div>
+
+        <!-- Chat Input Area -->
+        <div class="chat-input-area">
+            <div class="chat-input-container">
+                <div class="input-wrapper">
+                    <textarea 
+                        id="messageInput" 
+                        class="message-input" 
+                        placeholder="Type your message here..."
+                        rows="1"
+                    ></textarea>
+                    <button class="send-btn" id="sendBtn">
+                        <span class="send-icon">→</span>
+                    </button>
+                </div>
+                <div class="input-suggestions">
+                    <span class="suggestion-text">Try: "I'm feeling overwhelmed" or "Help me breathe"</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dashboard Container (Hidden when chat is open) -->
+    <div class="dashboard-container" id="dashboardContainer">
+        <!-- Header -->
+        <header class="dashboard-header">
+            <div class="header-content">
+                <h1 class="app-title">SafeSpace AI</h1>
+                <p class="app-subtitle">Your mindful companion for anxiety support</p>
+            </div>
+        </header>
+
+        <!-- Main Dashboard Content -->
+        <main class="dashboard-main">
+            <div class="dashboard-grid">
+                <!-- Welcome Card -->
+                <div class="dashboard-card welcome-card">
+                    <div class="card-header">
+                        <h2>Welcome Back</h2>
+                        <div class="mood-indicator">
+                            <span class="mood-text">How are you feeling today?</span>
+                            <div class="mood-buttons">
+                                <button class="mood-btn" data-mood="great">😊</button>
+                                <button class="mood-btn" data-mood="good">🙂</button>
+                                <button class="mood-btn" data-mood="okay">😐</button>
+                                <button class="mood-btn" data-mood="anxious">😰</button>
+                                <button class="mood-btn" data-mood="overwhelmed">😵</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="dashboard-card actions-card">
+                    <div class="card-header">
+                        <h2>Quick Actions</h2>
+                    </div>
+                    <div class="action-buttons">
+                        <button class="action-btn primary" id="startChatBtn">
+                            <span class="btn-icon">💬</span>
+                            <span class="btn-text">Start Chat</span>
+                        </button>
+                        <button class="action-btn secondary">
+                            <span class="btn-icon">🧘</span>
+                            <span class="btn-text">Breathing Exercise</span>
+                        </button>
+                        <button class="action-btn secondary">
+                            <span class="btn-icon">📝</span>
+                            <span class="btn-text">Journal Entry</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Progress Overview -->
+                <div class="dashboard-card progress-card">
+                    <div class="card-header">
+                        <h2>Your Progress</h2>
+                    </div>
+                    <div class="progress-stats">
+                        <div class="stat-item">
+                            <div class="stat-number">7</div>
+                            <div class="stat-label">Days Streak</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number">12</div>
+                            <div class="stat-label">Sessions</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number">85%</div>
+                            <div class="stat-label">Mood Score</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Activity -->
+                <div class="dashboard-card activity-card">
+                    <div class="card-header">
+                        <h2>Recent Activity</h2>
+                    </div>
+                    <div class="activity-list">
+                        <div class="activity-item">
+                            <div class="activity-icon">💬</div>
+                            <div class="activity-content">
+                                <div class="activity-title">Chat Session</div>
+                                <div class="activity-time">2 hours ago</div>
+                            </div>
+                        </div>
+                        <div class="activity-item">
+                            <div class="activity-icon">🧘</div>
+                            <div class="activity-content">
+                                <div class="activity-title">Breathing Exercise</div>
+                                <div class="activity-time">Yesterday</div>
+                            </div>
+                        </div>
+                        <div class="activity-item">
+                            <div class="activity-icon">📝</div>
+                            <div class="activity-content">
+                                <div class="activity-title">Journal Entry</div>
+                                <div class="activity-time">2 days ago</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Resources -->
+                <div class="dashboard-card resources-card">
+                    <div class="card-header">
+                        <h2>Helpful Resources</h2>
+                    </div>
+                    <div class="resource-links">
+                        <a href="#" class="resource-link">
+                            <span class="resource-icon">📚</span>
+                            <span class="resource-text">Anxiety Management Guide</span>
+                        </a>
+                        <a href="#" class="resource-link">
+                            <span class="resource-icon">🎵</span>
+                            <span class="resource-text">Calming Sounds</span>
+                        </a>
+                        <a href="#" class="resource-link">
+                            <span class="resource-icon">📖</span>
+                            <span class="resource-text">Mindfulness Tips</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Emergency Support -->
+                <div class="dashboard-card emergency-card">
+                    <div class="card-header">
+                        <h2>Emergency Support</h2>
+                    </div>
+                    <div class="emergency-content">
+                        <p class="emergency-text">If you're having a crisis, please reach out:</p>
+                        <div class="emergency-contacts">
+                            <a href="tel:988" class="emergency-btn">988 Suicide & Crisis Lifeline</a>
+                            <a href="tel:1-800-273-8255" class="emergency-btn">National Suicide Prevention Lifeline</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="script.js"></script>
+    <script src="chat.js"></script>
+</body>
+</html>
