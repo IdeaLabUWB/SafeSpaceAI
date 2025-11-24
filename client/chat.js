@@ -102,12 +102,31 @@ class ChatInterface {
         // Show typing indicator
         this.showTypingIndicator();
         
-        // Simulate bot response
-        setTimeout(() => {
-            this.hideTypingIndicator();
-            this.generateBotResponse(message);
-        }, 1500 + Math.random() * 1000);
+        this.callRagApi(message);
     }
+    
+    async callRagApi(userMessage) {
+        try {
+            const response = await fetch("http://localhost:3000/rag", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ userMessage })
+            });
+    
+            const data = await response.json();
+    
+            this.hideTypingIndicator();
+            this.addMessage(data.reply, "bot");
+    
+        } catch (err) {
+            this.hideTypingIndicator();
+            this.addMessage("Sorry, I’m having trouble connecting right now.", "bot");
+            console.error("RAG API Error:", err);
+        }
+    }
+
     
     sendQuickResponse(response) {
         this.messageInput.value = response;
