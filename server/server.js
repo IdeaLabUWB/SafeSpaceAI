@@ -4,13 +4,18 @@ dotenv.config();
 import express from "express";
 import cors from "cors";
 import fs from "fs";
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import { GoogleGenAI } from "@google/genai";
 
 const app = express();
 app.use(express.json());
 app.use(cors());
 
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+if (!process.env.GEMINI_API_KEY) {
+    console.error("ERROR: GEMINI_API_KEY is not set in .env file!");
+    console.error("Please create a .env file in the server directory with: GEMINI_API_KEY=your_api_key_here");
+}
+
+const genAI = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
 // Load KB + embeddings
 const docs = JSON.parse(fs.readFileSync("../assets/knowledgeBase.json", "utf8"));
@@ -35,16 +40,16 @@ app.post("/rag", async (req, res) => {
         const query = req.body.userMessage;
 
         // ------ Embed user query ------
-        const embedModel = genAI.getGenerativeModel({
-            model: "text-embedding-004"
+        const embedRes = await genAI.models.embedContent({
+            model: "text-embedding-004",
+            contents: query
         });
-
-        const embedRes = await embedModel.embedContent({
-            content: {
-              parts: [{ text: query }]
-            }
-          });
-        const qVec = embedRes.embedding.values;
+        const qVec =
+            embedRes?.embedding?.values ??
+            embedRes?.embeddings?.[0]?.values;
+        if (!qVec) {
+            throw new Error("Embedding response missing values");
+        }
 
         // ------ Retrieve best document ------
         let best = { text: "", score: -Infinity };
@@ -60,11 +65,11 @@ app.post("/rag", async (req, res) => {
         });
 
         // ------ Generate answer using Gemini ------
-        const chatModel = genAI.getGenerativeModel({
-            model: "gemini-1.5-flash-002"
-        });
+        const modelName = "gemini-3-flash-preview";
 
-        const result = await chatModel.generateContent(`
+        const result = await genAI.models.generateContent({
+            model: modelName,
+            contents: `
 You are SafeSpace AI, a CBT-guided, emotionally supportive AI.
 Use the following knowledge base context to answer safely:
 
@@ -73,9 +78,10 @@ ${best.text}
 
 User message:
 ${query}
-        `);
+            `
+        });
 
-        return res.json({ reply: result.response.text() });
+        return res.json({ reply: result.text });
 
     } catch (err) {
         console.error(err);
