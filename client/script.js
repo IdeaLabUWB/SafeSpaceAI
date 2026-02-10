@@ -172,7 +172,14 @@ function openJournal() {
 }
 
 function handleResourceClick(link) {
-    const resourceText = link.querySelector('.resource-text').textContent;
+    const resourceText = link.querySelector('.resource-text')?.textContent?.trim() ?? '';
+    
+    if (resourceText === 'Calming Sounds') {
+        if (typeof window.toggleSoundCloudWidget === 'function') {
+            window.toggleSoundCloudWidget();
+        }
+        return;
+    }
     
     // Add click animation
     link.style.transform = 'translateX(8px)';
