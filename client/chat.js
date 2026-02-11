@@ -345,12 +345,6 @@ class ChatInterface {
 
 // Initialize chat when DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {
-    // Initialize the original dashboard
-    initializeDashboard();
-    setupEventListeners();
-    loadUserData();
-    
-    // Initialize chat interface
     window.chatInterface = new ChatInterface();
 });
 
