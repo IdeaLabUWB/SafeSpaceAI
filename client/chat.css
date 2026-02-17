@@ -543,3 +543,92 @@
         padding: 8px 12px;
     }
 }
+
+.soundcloud-modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(6px);
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+}
+
+.soundcloud-modal.active {
+    display: flex;
+}
+
+.soundcloud-modal-content {
+    background: white;
+    width: 90%;
+    max-width: 600px;
+    border-radius: 16px;
+    padding: 20px;
+    position: relative;
+    animation: fadeInScale 0.25s ease;
+}
+
+.soundcloud-close {
+    position: absolute;
+    top: 10px;
+    right: 14px;
+    background: none;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+@keyframes fadeInScale {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.floating-player {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 380px;
+    height: 480px;
+    background: white;
+    border-radius: 18px;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.2);
+    z-index: 3000;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.floating-player.hidden {
+    display: none;
+}
+
+.floating-header {
+    background: var(--primary-sage);
+    color: white;
+    padding: 12px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: grab;
+    font-weight: 500;
+}
+
+.floating-header button {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+#soundcloud-container {
+    flex: 1;
+}
+

@@ -14,7 +14,7 @@ let currentTrackIndex = 0;
 function buildEmbedUrl() {
     const encoded = encodeURIComponent(SOUNDCLOUD_PLAYLIST_URL);
     // visual=true shows full playlist UI. auto_play=true plays first song when widget opens.
-    return `https://w.soundcloud.com/player/?url=${encoded}&auto_play=true&visual=true&show_user=false`;
+    return `https://w.soundcloud.com/player/?url=${encoded}&auto_play=true&visual=false&show_user=false`;
 }
 
 function loadWidgetApi(callback) {
@@ -46,29 +46,63 @@ function bindSingleTrackLoop() {
 }
 
 function toggleSoundCloudWidget() {
+    const player = document.getElementById('floating-player');
     const container = document.getElementById(CONTAINER_ID);
-    if (!container) return;
 
     if (!iframe) {
         iframe = document.createElement('iframe');
         iframe.src = buildEmbedUrl();
         iframe.setAttribute('width', '100%');
-        iframe.setAttribute('height', '450');
+        iframe.setAttribute('height', '100%');
         iframe.setAttribute('scrolling', 'no');
         iframe.setAttribute('frameborder', 'no');
         iframe.setAttribute('allow', 'autoplay');
+
         container.appendChild(iframe);
-        container.style.display = 'block';
-        isVisible = true;
 
         loadWidgetApi(function () {
             widget = window.SC.Widget(iframe);
             widget.bind(window.SC.Widget.Events.READY, bindSingleTrackLoop);
         });
-    } else {
-        isVisible = !isVisible;
-        container.style.display = isVisible ? 'block' : 'none';
     }
+
+    player.classList.remove('hidden');
 }
 
 window.toggleSoundCloudWidget = toggleSoundCloudWidget;
+
+document.addEventListener('DOMContentLoaded', function () {
+    const player = document.getElementById('floating-player');
+    const header = document.getElementById('floating-header');
+    const closeBtn = document.getElementById('floating-close');
+
+    // Close button
+    closeBtn.addEventListener('click', function () {
+        player.classList.add('hidden');
+    });
+
+    // Dragging logic
+    let isDragging = false;
+    let offsetX, offsetY;
+
+    header.addEventListener('mousedown', function (e) {
+        isDragging = true;
+        offsetX = e.clientX - player.offsetLeft;
+        offsetY = e.clientY - player.offsetTop;
+        header.style.cursor = 'grabbing';
+    });
+
+    document.addEventListener('mousemove', function (e) {
+        if (!isDragging) return;
+        player.style.left = e.clientX - offsetX + 'px';
+        player.style.top = e.clientY - offsetY + 'px';
+        player.style.bottom = 'auto';
+        player.style.right = 'auto';
+    });
+
+    document.addEventListener('mouseup', function () {
+        isDragging = false;
+        header.style.cursor = 'grab';
+    });
+});
+
