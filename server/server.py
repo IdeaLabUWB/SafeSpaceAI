@@ -1,6 +1,8 @@
 import os
+import re
+import time
 
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from dotenv import load_dotenv
@@ -9,8 +11,6 @@ import google.generativeai as genai
 
 from langchain_chroma import Chroma
 from langchain_openai import OpenAIEmbeddings
-
-import re
 
 def format_safespace(text: str):
     sections = dict(re.findall(r"\[(.*?)\]\s*(.*?)(?=\n\[|$)", text, re.S))
@@ -72,6 +72,14 @@ db = Chroma(
 retriever = db.as_retriever(search_kwargs={"k": 5})
 
 
+def _parse_retry_seconds(error_message: str) -> float:
+    """Parse 'Please retry in X.XXs' from Gemini API error message."""
+    match = re.search(r"retry in (\d+(?:\.\d+)?)\s*s", error_message, re.I)
+    if match:
+        return min(float(match.group(1)) + 1, 60)
+    return 25.0
+
+
 # ---------------- RAG ENDPOINT ----------------
 @app.post("/rag")
 def rag(query: Query):
@@ -82,7 +90,7 @@ def rag(query: Query):
         [f"Chunk {i + 1}:\n{doc.page_content}" for i, doc in enumerate(docs)]
     )
 
-    model = genai.GenerativeModel("gemini-3-flash-preview")
+    model = genai.GenerativeModel("gemini-2.5-flash-lite")
 
     prompt = f"""
 You are SafeSpace AI, a calm mental wellness support companion.
@@ -125,13 +133,31 @@ User:
 {user_query}
 """
 
-    response = model.generate_content(prompt)
-
-    raw_text = response.text if response and response.text else ""
-
-    formatted = format_safespace(raw_text)
-
-    return {
-    "raw": raw_text,          # optional: helpful for debugging
-    "reply": formatted        # UI-ready response
-    }
+    max_retries = 3
+    for attempt in range(max_retries):
+        try:
+            response = model.generate_content(prompt)
+            raw_text = response.text if response and response.text else ""
+            formatted = format_safespace(raw_text)
+            return {
+                "raw": raw_text,
+                "reply": formatted,
+            }
+        except Exception as e:
+            msg = str(e)
+            is_quota = (
+                "429" in msg
+                or "quota" in msg.lower()
+                or "RESOURCE_EXHAUSTED" in msg
+                or "rate" in msg.lower()
+            )
+            if is_quota and attempt < max_retries - 1:
+                delay = _parse_retry_seconds(msg)
+                time.sleep(delay)
+                continue
+            if is_quota:
+                raise HTTPException(
+                    status_code=429,
+                    detail="Gemini API rate limit reached. Please wait a moment and try again, or check your quota at https://ai.google.dev/gemini-api/docs/rate-limits",
+                )
+            raise HTTPException(status_code=502, detail=f"Model error: {msg}")
