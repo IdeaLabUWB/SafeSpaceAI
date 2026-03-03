@@ -74,10 +74,14 @@
                         placeholder="Type your message here..."
                         rows="1"
                     ></textarea>
+                    <button class="mic-btn" id="micBtn" type="button" aria-label="Start voice input">
+                        <span class="mic-icon">🎙</span>
+                    </button>
                     <button class="send-btn" id="sendBtn">
                         <span class="send-icon">→</span>
                     </button>
                 </div>
+                <div class="voice-status" id="voiceStatus" aria-live="polite"></div>
             </div>
         </div>
     </div>
@@ -122,36 +126,22 @@
                             <span class="btn-icon">💬</span>
                             <span class="btn-text">Start Chat</span>
                         </button>
-                        <button class="action-btn secondary">
-                            <span class="btn-icon">🧘</span>
-                            <span class="btn-text">Breathing Exercise</span>
-                        </button>
                     </div>
                 </div>
 
-                <!-- Progress Overview -->
+                <!-- Breathing Visualizer -->
                 <div class="dashboard-card progress-card">
                     <div class="card-header">
-                        <h2>Your Progress</h2>
+                        <h2>Breathing Visualizer</h2>
                     </div>
-                    <div class="progress-stats">
-                        <div class="stat-item">
-                            <div class="stat-number">7</div>
-                            <div class="stat-label">Days Streak</div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="stat-number">12</div>
-                            <div class="stat-label">Sessions</div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="stat-number">85%</div>
-                            <div class="stat-label">Mood Score</div>
-                        </div>
-                    </div>
+                     <button class="action-btn secondary" id="breathingExerciseBtn">
+                            <span class="btn-icon">🧘</span>
+                            <span class="btn-text">Breathing Exercise</span>
+                     </button>
                 </div>
 
                 <!-- Recent Activity -->
-                <div class="dashboard-card activity-card">
+                <!-- <div class="dashboard-card activity-card">
                     <div class="card-header">
                         <h2>Recent Activity</h2>
                     </div>
@@ -178,7 +168,7 @@
                             </div>
                         </div>
                     </div>
-                </div>
+                </div> -->
 
                 <!-- Resources -->
                 <div class="dashboard-card resources-card">
@@ -193,10 +183,6 @@
                         <a href="#" class="resource-link">
                             <span class="resource-icon">🎵</span>
                             <span class="resource-text">Calming Sounds</span>
-                        </a>
-                        <a href="#" class="resource-link">
-                            <span class="resource-icon">📖</span>
-                            <span class="resource-text">Mindfulness Tips</span>
                         </a>
                     </div>
                     <!-- Floating SoundCloud Widget -->
@@ -224,6 +210,42 @@
                 </div>
             </div>
         </main>
+    </div>
+
+    <div class="breathing-modal" id="breathingModal" aria-hidden="true">
+        <div class="breathing-panel" role="dialog" aria-modal="true" aria-labelledby="breathingTitle">
+            <button class="breathing-close" id="breathingCloseBtn" aria-label="Close breathing exercise">x</button>
+            <div class="breathing-panel-header">
+                <p class="breathing-eyebrow">Guided reset</p>
+                <h2 id="breathingTitle">Box Breathing</h2>
+                <p class="breathing-intro">Follow the square: inhale, hold, exhale, hold. Four counts each.</p>
+            </div>
+
+            <div class="breathing-visualizer" id="breathingVisualizer">
+                <div class="breathing-orbit breathing-orbit-top"></div>
+                <div class="breathing-orbit breathing-orbit-right"></div>
+                <div class="breathing-orbit breathing-orbit-bottom"></div>
+                <div class="breathing-orbit breathing-orbit-left"></div>
+                <div class="breathing-core">
+                    <p class="breathing-phase-label" id="breathingPhaseLabel">Inhale</p>
+                    <div class="breathing-count" id="breathingCount">4</div>
+                    <p class="breathing-cycle" id="breathingCycle">Cycle 1 of 4</p>
+                </div>
+                <div class="breathing-dot" id="breathingDot"></div>
+            </div>
+
+            <div class="breathing-phase-strip" id="breathingPhaseStrip">
+                <div class="breathing-phase-card active" data-phase-card="inhale">Inhale</div>
+                <div class="breathing-phase-card" data-phase-card="hold-1">Hold</div>
+                <div class="breathing-phase-card" data-phase-card="exhale">Exhale</div>
+                <div class="breathing-phase-card" data-phase-card="hold-2">Hold</div>
+            </div>
+
+            <div class="breathing-controls">
+                <button class="breathing-control-btn primary" id="breathingToggleBtn">Pause</button>
+                <button class="breathing-control-btn" id="breathingResetBtn">Restart</button>
+            </div>
+        </div>
     </div>
 
     <script src="music.js"></script>
