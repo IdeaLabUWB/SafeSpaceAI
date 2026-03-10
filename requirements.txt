@@ -5,3 +5,7 @@ langchain-chroma
 python-dotenv
 openai
 chromadb
+fastapi
+uvicorn[standard]
+pandas
+google-generativeai
