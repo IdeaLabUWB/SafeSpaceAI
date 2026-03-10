@@ -71,21 +71,30 @@ Create `server/.env` with:
 GEMINI_API_KEY=your_gemini_api_key
 OPENAI_API_KEY=your_openai_api_key
 ```
+Optional (defaults shown):
+```
+PORT=3000
+FRONTEND_ORIGIN=http://localhost:5500
+```
 Notes:
-- `GEMINI_API_KEY` is required for `server.js` and `embed.js`.
-- `OPENAI_API_KEY` is only required for `dataIngestion/ingestion_pipeline.py`.
+- `GEMINI_API_KEY` is required for the backend; `OPENAI_API_KEY` for ingestion pipeline.
+- `PORT` is the backend port (default **3000**). The frontend expects the API at this port (see `client/config.js`).
+- `FRONTEND_ORIGIN` is the URL where the client is served (default **5500**); must match for CORS.
 - Do not commit real API keys to git.
+
+## Ports (fixed by default)
+- **Backend:** `http://localhost:3000` (set `PORT` in `server/.env` to change)
+- **Frontend:** `http://localhost:5500` (change in `client/config.js` and when starting the client server)
 
 ## Run the Server
 ```
 cd server
-npm install
-node server.js
+python server.py
 ```
-The server runs on `http://localhost:3000`.
+Or: `uvicorn server:app --host 127.0.0.1 --port 3000`. The server runs on `http://localhost:3000`.
 
 ## Run the Client
-Serve the static files locally (recommended):
+Serve the static files on port **5500** (must match `client/config.js` and backend CORS):
 ```
 cd client
 python -m http.server 5500

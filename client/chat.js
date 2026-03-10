@@ -456,7 +456,7 @@ class ChatInterface {
     
     async callRagApi(userMessage) {
         try {
-            const response = await fetch("http://127.0.0.1:8000/rag", {
+            const response = await fetch(`${APP_CONFIG.apiBaseUrl}/rag`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"

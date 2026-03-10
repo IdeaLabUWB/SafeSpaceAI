@@ -34,6 +34,10 @@ load_dotenv()
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 
+# Ports: backend runs on PORT, CORS allows FRONTEND_ORIGIN (frontend port)
+PORT = int(os.getenv("PORT", 3000))
+FRONTEND_ORIGIN = os.getenv("FRONTEND_ORIGIN", "http://localhost:5500")
+
 if not GEMINI_API_KEY:
     raise ValueError("Missing GEMINI_API_KEY in .env")
 
@@ -47,7 +51,7 @@ app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://127.0.0.1:5500", "http://localhost:5500"],
+    allow_origins=[FRONTEND_ORIGIN, "http://127.0.0.1:5500", "http://localhost:5500"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -161,3 +165,8 @@ User:
                     detail="Gemini API rate limit reached. Please wait a moment and try again, or check your quota at https://ai.google.dev/gemini-api/docs/rate-limits",
                 )
             raise HTTPException(status_code=502, detail=f"Model error: {msg}")
+
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="127.0.0.1", port=PORT)
