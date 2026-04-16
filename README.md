@@ -1,167 +1,138 @@
 # SafeSpaceAI
 
-A calm, CBT-guided, RAG-powered chatbot for anxiety support, with a web dashboard and chat UI.
+SafeSpaceAI is a calm, CBT-guided web assistant that uses retrieval-augmented generation (RAG) to provide grounding and anxiety-support conversations.
 
-## Overview
-SafeSpaceAI combines a lightweight web client with a Node/Express backend that uses Gemini for embeddings and generation. User messages are embedded, matched against a small local knowledge base, and then used as context for response generation.
+## What This Project Demonstrates
 
-This repo contains:
-- A static web UI (dashboard + chat)
-- A Node server that exposes a `/rag` endpoint
-- Scripts to generate embeddings for the knowledge base
-- An optional Python ingestion pipeline for building a Chroma vector store
-
-## Features
-- RAG workflow with cosine similarity over a local knowledge base
-- CBT-oriented responses and grounding guidance
-- Clean, responsive dashboard and chat interface
-- Embedding regeneration workflow for updated KB content
-- Optional document ingestion pipeline (Chroma + OpenAI embeddings)
+- End-to-end AI application development (frontend + API + retrieval pipeline)
+- FastAPI backend design with CORS, structured prompts, and resilient error handling
+- RAG integration using LangChain + Chroma for context retrieval
+- Human-centered UX for supportive, low-friction interactions
 
 ## Architecture
-```
-[Browser UI]  -->  POST /rag  -->  [Node/Express]
-                                       |
-                                       |  embed user query (Gemini)
-                                       |  cosine similarity against kb_embeddings.json
-                                       v
-                                [KB context + user message]
-                                       |
-                                       v
-                             [Gemini generation]
+
+```text
+[Browser (HTML/CSS/JS)]
+        |
+        | POST /rag
+        v
+[FastAPI backend]
+        |
+        | retrieve top-k context chunks from Chroma
+        | generate response with Gemini
+        v
+[Structured supportive response]
 ```
 
 ## Tech Stack
-- Frontend: HTML, CSS, vanilla JavaScript
-- Backend: Node.js, Express, CORS
-- LLM/Embeddings: Google Gemini (`@google/genai`, `@google/generative-ai`)
-- Optional ingestion: Python, LangChain, Chroma, OpenAI embeddings
 
-## Project Structure
-```
+- Frontend: HTML, CSS, vanilla JavaScript
+- Backend: Python, FastAPI, Uvicorn
+- Retrieval: LangChain + Chroma vector store
+- Model APIs: Google Gemini (generation), OpenAI embeddings (retrieval)
+- Environment/config: `python-dotenv`
+
+## Repository Structure
+
+```text
 SafeSpaceAI/
   assets/
-    knowledgeBase.json        # Seed knowledge base (CBT + grounding snippets)
+    knowledgeBase.json
   client/
     index.html
-    styles.css
-    chat.css
-    script.js
     chat.js
+    script.js
+    config.js
   dataIngestion/
-    docs/                     # Place .txt documents here
     ingestion_pipeline.py
+    docs/
   server/
-    server.js                 # RAG endpoint
-    embed.js                  # Regenerate kb_embeddings.json from knowledgeBase.json
-    kb_embeddings.json
-    test.js
-    package.json
+    server.py
+    .env.example
+    db/                  # local vector store (gitignored)
+  requirements.txt
 ```
 
-## Setup
-### Prerequisites
-- Node.js 18+
-- npm
-- Python 3.10+ (only for ingestion pipeline)
+## Quick Start
 
-### Environment variables
-Create `server/.env` with:
+### 1) Install dependencies
+
+```bash
+pip install -r requirements.txt
 ```
-GEMINI_API_KEY=your_gemini_api_key
+
+### 2) Configure environment variables
+
+Copy `server/.env.example` to `server/.env` and fill values:
+
+```env
 OPENAI_API_KEY=your_openai_api_key
-```
-Optional (defaults shown):
-```
+GEMINI_API_KEY=your_gemini_api_key
 PORT=3000
 FRONTEND_ORIGIN=http://localhost:5500
 ```
-Notes:
-- `GEMINI_API_KEY` is required for the backend; `OPENAI_API_KEY` for ingestion pipeline.
-- `PORT` is the backend port (default **3000**). The frontend expects the API at this port (see `client/config.js`).
-- `FRONTEND_ORIGIN` is the URL where the client is served (default **5500**); must match for CORS.
-- Do not commit real API keys to git.
 
-## Ports (fixed by default)
-- **Backend:** `http://localhost:3000` (set `PORT` in `server/.env` to change)
-- **Frontend:** `http://localhost:5500` (change in `client/config.js` and when starting the client server)
+### 3) Run backend
 
-## Run the Server
-```
+```bash
 cd server
 python server.py
 ```
-Or: `uvicorn server:app --host 127.0.0.1 --port 3000`. The server runs on `http://localhost:3000`.
 
-## Run the Client
-Serve the static files on port **5500** (must match `client/config.js` and backend CORS):
-```
+Backend default: `http://localhost:3000`
+
+### 4) Run frontend
+
+```bash
 cd client
 python -m http.server 5500
 ```
-Then open `http://localhost:5500` in your browser.
 
-## RAG API
-### Endpoint
-`POST /rag`
+Open `http://localhost:5500`.
 
-### Request
-```
+## API
+
+### `POST /rag`
+
+Request:
+
+```json
 {
   "userMessage": "I'm feeling anxious"
 }
 ```
 
-### Response
-```
+Response:
+
+```json
 {
+  "raw": "...",
   "reply": "..."
 }
 ```
 
-### Example (curl)
-```
-curl -X POST http://localhost:3000/rag \
-  -H "Content-Type: application/json" \
-  -d "{\"userMessage\":\"I'm feeling anxious\"}"
-```
+## Optional Data Ingestion Workflow
 
-## Knowledge Base & Embeddings
-- Edit `assets/knowledgeBase.json` to update the knowledge base.
-- Regenerate embeddings:
-```
-cd server
-node embed.js
-```
-This rebuilds `server/kb_embeddings.json`.
+To rebuild a local Chroma store from text documents:
 
-## Optional: Document Ingestion Pipeline
-The ingestion pipeline builds a Chroma vector store from `.txt` files and uses OpenAI embeddings. This is not wired into `server.js` by default, but can be used for experiments or future integration.
+1. Place `.txt` files in `dataIngestion/docs/`
+2. Run:
 
-1. Add `.txt` files to `dataIngestion/docs`.
-2. Install Python dependencies (example):
-```
-pip install langchain-core langchain-text-splitters langchain-openai langchain-chroma python-dotenv
-```
-3. Run the pipeline:
-```
+```bash
 cd dataIngestion
 python ingestion_pipeline.py
 ```
-The vector store is persisted to `db/chroma_db`.
 
-## Testing
-There are no automated tests yet. You can quickly validate Gemini connectivity with:
-```
-cd server
-node test.js
-```
+## Showcase Notes
 
-## Safety Disclaimer
-SafeSpaceAI is not a substitute for professional medical advice, diagnosis, or treatment. If you are in crisis or need immediate help, call 988 (U.S.) or your local emergency number.
+- This project is intended as a **portfolio/work-sample artifact**.
+- Secrets are excluded via `.gitignore`; use `server/.env.example` as the template.
+- Generated runtime artifacts (vector DB, caches, `node_modules`) are excluded from version control.
 
-## Contributing
-Contributions are welcome. Please open an issue or PR with clear context and steps to reproduce changes.
+## Safety Notice
+
+This application is for supportive conversation and educational demonstration. It is **not** a replacement for professional medical care. In urgent situations, contact local emergency services or a crisis hotline (in the U.S., dial 988).
 
 ## License
-No license is currently specified.
+
+MIT (see `LICENSE`).

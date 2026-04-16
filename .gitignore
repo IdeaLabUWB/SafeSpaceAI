@@ -1,4 +1,22 @@
 package-lock.json
-server/node_modules/
 .env
 server/.env
+
+# Node artifacts
+server/node_modules/
+npm-debug.log*
+
+# Python artifacts
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.pytest_cache/
+.mypy_cache/
+.venv/
+venv/
+
+# Local vector stores and generated data
+server/db/
+db/
+*.sqlite3
