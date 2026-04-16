@@ -72,7 +72,10 @@ PORT=3000
 FRONTEND_ORIGIN=http://localhost:5500
 ```
 
-### 3) Run backend
+### 3) Run ingestion_pipeline -> backend
+
+cd dataIngestion
+python ingestion_pipeline.py
 
 ```bash
 cd server
@@ -122,6 +125,20 @@ To rebuild a local Chroma store from text documents:
 cd dataIngestion
 python ingestion_pipeline.py
 ```
+
+## Demo
+
+### Landing Page
+![Chat UI](screenshots/Landing%20Page.png)
+
+### Breathing Tool
+![Breathing](screenshots/Breathing%20Visualiser.png)
+
+### LLM Chatbot
+![Chat Support](screenshots/CBT%20grounded%20AI%20chatbot.png)
+
+### Music Therapy
+![Music Therapy](screenshots/Integrated%20Calming%20Music%20Therapy.png)
 
 ## Showcase Notes
 

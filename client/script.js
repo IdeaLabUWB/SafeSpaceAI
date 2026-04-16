@@ -11,6 +11,14 @@ document.addEventListener('DOMContentLoaded', function() {
     loadUserData();
 });
 
+const MOOD_LEVELS = [
+    { value: 0, key: 'happy', label: 'Happy', color: '#7bc8a4' },
+    { value: 1, key: 'neutral', label: 'Neutral', color: '#8db1ff' },
+    { value: 2, key: 'anxious', label: 'Anxious', color: '#d8a1ff' },
+    { value: 3, key: 'uneasy', label: 'Uneasy', color: '#f6b48d' },
+    { value: 4, key: 'not_ok', label: 'Not OK', color: '#f28fb3' }
+];
+
 function initializeDashboard() {
     console.log('SafeSpace AI Dashboard initialized');
     
@@ -22,13 +30,13 @@ function initializeDashboard() {
 }
 
 function setupEventListeners() {
-    // Mood selection buttons
-    const moodButtons = document.querySelectorAll('.mood-btn');
-    moodButtons.forEach(button => {
-        button.addEventListener('click', function() {
-            selectMood(this);
+    // Mood intensity slider
+    const moodSlider = document.getElementById('moodSlider');
+    if (moodSlider) {
+        moodSlider.addEventListener('input', function() {
+            updateMoodMeter(Number(this.value), true);
         });
-    });
+    }
     
     // Action buttons
     const actionButtons = document.querySelectorAll('.action-btn');
@@ -49,30 +57,33 @@ function setupEventListeners() {
     });
 }
 
-function selectMood(button) {
-    // Remove previous selection
-    document.querySelectorAll('.mood-btn').forEach(btn => {
-        btn.classList.remove('selected');
-    });
-    
-    // Add selection to clicked button
-    button.classList.add('selected');
-    
-    // Get mood data
-    const mood = button.dataset.mood;
-    const moodEmoji = button.textContent;
-    
-    // Store mood selection
-    localStorage.setItem('currentMood', JSON.stringify({
-        mood: mood,
-        emoji: moodEmoji,
-        timestamp: new Date().toISOString()
-    }));
-    
-    // Show feedback
-    showMoodFeedback(mood);
-    
-    console.log(`Mood selected: ${mood}`);
+function updateMoodMeter(value, persist = false) {
+    const moodSlider = document.getElementById('moodSlider');
+    const moodLevelLabel = document.getElementById('moodLevelLabel');
+    if (!moodSlider || !moodLevelLabel) {
+        return;
+    }
+
+    const safeValue = Math.max(0, Math.min(4, value));
+    const moodLevel = MOOD_LEVELS[safeValue];
+    const percent = (safeValue / 4) * 100;
+
+    moodSlider.value = String(safeValue);
+    moodLevelLabel.textContent = moodLevel.label;
+    moodLevelLabel.style.background = `${moodLevel.color}33`;
+    moodLevelLabel.style.borderColor = `${moodLevel.color}66`;
+    moodLevelLabel.style.color = moodLevel.color;
+    moodSlider.style.background = `linear-gradient(to right, ${moodLevel.color} 0%, ${moodLevel.color} ${percent}%, rgba(255,255,255,0.35) ${percent}%, rgba(255,255,255,0.35) 100%)`;
+
+    if (persist) {
+        localStorage.setItem('currentMood', JSON.stringify({
+            mood: moodLevel.key,
+            moodValue: safeValue,
+            moodLabel: moodLevel.label,
+            timestamp: new Date().toISOString()
+        }));
+        showMoodFeedback(moodLevel.key);
+    }
 }
 
 function showMoodFeedback(mood) {
@@ -107,11 +118,11 @@ function showMoodFeedback(mood) {
 
 function getMoodMessage(mood) {
     const messages = {
-        'great': 'Wonderful! Keep up the positive energy! 🌟',
-        'good': 'That\'s great to hear! 😊',
-        'okay': 'It\'s okay to have neutral days. 💙',
+        'happy': 'Wonderful! Keep up the positive energy! 🌟',
+        'neutral': 'Thanks for checking in. A neutral day is completely okay. 💙',
         'anxious': 'I\'m here to help. Let\'s work through this together. 🤗',
-        'overwhelmed': 'Take a deep breath. You\'re not alone. 💙'
+        'uneasy': 'Thanks for sharing this. Let\'s slow down and reset together. 🌿',
+        'not_ok': 'I\'m here with you. Let\'s take one small step together right now. 💙'
     };
     return messages[mood] || 'Thank you for sharing how you feel.';
 }
@@ -132,6 +143,9 @@ function handleActionClick(button) {
             break;
         case 'Breathing Exercise':
             startBreathingExercise();
+            break;
+        case 'Music Therapy':
+            startCalmingMusic();
             break;
         case 'Journal Entry':
             openJournal();
@@ -169,6 +183,14 @@ function openJournal() {
     setTimeout(() => {
         showNotification('Journal ready for your thoughts 📝', 'success');
     }, 1000);
+}
+
+function startCalmingMusic() {
+    showNotification('Opening calming music...', 'info');
+
+    if (typeof window.toggleSoundCloudWidget === 'function') {
+        window.toggleSoundCloudWidget();
+    }
 }
 
 function handleResourceClick(link) {
@@ -263,16 +285,28 @@ function updateTime() {
 function loadUserData() {
     // Load saved mood if available
     const savedMood = localStorage.getItem('currentMood');
+    let moodLoaded = false;
+
     if (savedMood) {
         try {
             const moodData = JSON.parse(savedMood);
-            const moodButton = document.querySelector(`[data-mood="${moodData.mood}"]`);
-            if (moodButton) {
-                moodButton.classList.add('selected');
+            if (typeof moodData.moodValue === 'number') {
+                updateMoodMeter(moodData.moodValue);
+                moodLoaded = true;
+            } else if (moodData.mood) {
+                const fallbackIndex = MOOD_LEVELS.findIndex(level => level.key === moodData.mood);
+                if (fallbackIndex >= 0) {
+                    updateMoodMeter(fallbackIndex);
+                    moodLoaded = true;
+                }
             }
         } catch (e) {
             console.log('Error loading saved mood:', e);
         }
+    }
+
+    if (!moodLoaded) {
+        updateMoodMeter(0);
     }
     
     // Simulate loading user progress data
