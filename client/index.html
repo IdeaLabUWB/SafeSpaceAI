@@ -70,6 +70,133 @@
             </div>
         </div>
 
+        <!-- Cozy meadow mascot banner -->
+        <div class="chat-mascot-banner" aria-hidden="true">
+            <div class="chat-mascot-bloom"></div>
+            <div class="chat-mascot" id="chatMascot">
+                <svg class="chat-mascot-svg" viewBox="0 0 140 140" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <radialGradient id="bunnyBody" cx="38%" cy="34%" r="78%">
+                            <stop offset="0%"   stop-color="#fff7e8"/>
+                            <stop offset="40%"  stop-color="#ffe2cd"/>
+                            <stop offset="78%"  stop-color="#f5bcb8"/>
+                            <stop offset="100%" stop-color="#d895a4"/>
+                        </radialGradient>
+                        <radialGradient id="bunnyBelly" cx="50%" cy="50%" r="60%">
+                            <stop offset="0%"   stop-color="rgba(255,250,232,0.9)"/>
+                            <stop offset="100%" stop-color="rgba(255,225,205,0)"/>
+                        </radialGradient>
+                        <linearGradient id="bunnyInnerEar" x1="50%" y1="100%" x2="50%" y2="0%">
+                            <stop offset="0%"   stop-color="#f29ab2"/>
+                            <stop offset="50%"  stop-color="#fcc7c8"/>
+                            <stop offset="100%" stop-color="#ffe1d4"/>
+                        </linearGradient>
+                        <radialGradient id="bunnyCheek" cx="50%" cy="50%" r="55%">
+                            <stop offset="0%"   stop-color="rgba(255,154,178,0.8)"/>
+                            <stop offset="100%" stop-color="rgba(255,154,178,0)"/>
+                        </radialGradient>
+                        <radialGradient id="bunnyNose" cx="50%" cy="35%" r="65%">
+                            <stop offset="0%"   stop-color="#ffb0bc"/>
+                            <stop offset="55%"  stop-color="#ee7d92"/>
+                            <stop offset="100%" stop-color="#b8455e"/>
+                        </radialGradient>
+                        <radialGradient id="bunnyEyeShine" cx="35%" cy="30%" r="60%">
+                            <stop offset="0%"  stop-color="#fff" stop-opacity="0.95"/>
+                            <stop offset="60%" stop-color="#fff" stop-opacity="0"/>
+                        </radialGradient>
+                    </defs>
+
+                    <!-- Hind paws tucked behind the body -->
+                    <ellipse class="mascot-paw" cx="32" cy="118" rx="16" ry="7"
+                             fill="url(#bunnyBody)" stroke="rgba(180,110,130,0.3)" stroke-width="0.7"/>
+                    <ellipse class="mascot-paw" cx="108" cy="118" rx="16" ry="7"
+                             fill="url(#bunnyBody)" stroke="rgba(180,110,130,0.3)" stroke-width="0.7"/>
+
+                    <!-- LEFT EAR (long, upright, soft tip) -->
+                    <g class="mascot-ear mascot-ear-left">
+                        <path d="M 42,46 C 34,28 32,8 44,4 C 54,6 56,28 52,46 Z"
+                              fill="url(#bunnyBody)"
+                              stroke="rgba(180,110,130,0.36)" stroke-width="0.7"/>
+                        <path d="M 45,42 C 41,28 41,12 46,8 C 51,12 51,28 49,42 Z"
+                              fill="url(#bunnyInnerEar)" opacity="0.92"/>
+                    </g>
+
+                    <!-- RIGHT EAR -->
+                    <g class="mascot-ear mascot-ear-right">
+                        <path d="M 98,46 C 106,28 108,8 96,4 C 86,6 84,28 88,46 Z"
+                              fill="url(#bunnyBody)"
+                              stroke="rgba(180,110,130,0.36)" stroke-width="0.7"/>
+                        <path d="M 95,42 C 99,28 99,12 94,8 C 89,12 89,28 91,42 Z"
+                              fill="url(#bunnyInnerEar)" opacity="0.92"/>
+                    </g>
+
+                    <!-- BODY: round, slightly egg-shaped, head + body merged for cosiness -->
+                    <ellipse class="mascot-body" cx="70" cy="82" rx="44" ry="38"
+                             fill="url(#bunnyBody)"
+                             stroke="rgba(180,110,130,0.32)" stroke-width="1"/>
+
+                    <!-- Soft cream belly highlight -->
+                    <ellipse cx="64" cy="94" rx="24" ry="14" fill="url(#bunnyBelly)"/>
+
+                    <!-- Front paws resting in front of the body -->
+                    <ellipse class="mascot-paw" cx="46" cy="112" rx="10" ry="6"
+                             fill="url(#bunnyBody)"
+                             stroke="rgba(180,110,130,0.32)" stroke-width="0.7"/>
+                    <ellipse class="mascot-paw" cx="94" cy="112" rx="10" ry="6"
+                             fill="url(#bunnyBody)"
+                             stroke="rgba(180,110,130,0.32)" stroke-width="0.7"/>
+
+                    <!-- Rosy cheek blushes -->
+                    <ellipse class="mascot-cheek" cx="44" cy="84" rx="7" ry="5"
+                             fill="url(#bunnyCheek)"/>
+                    <ellipse class="mascot-cheek" cx="92" cy="84" rx="7" ry="5"
+                             fill="url(#bunnyCheek)"/>
+
+                    <!-- Eyes (big and gentle, blink together) -->
+                    <g class="mascot-eyes">
+                        <g class="mascot-eye mascot-eye-left">
+                            <ellipse cx="56" cy="72" rx="4.5" ry="6.5" fill="#3a2438"/>
+                            <ellipse cx="56" cy="72" rx="4.5" ry="6.5" fill="url(#bunnyEyeShine)"/>
+                            <circle  cx="57.5" cy="69" r="1.5" fill="#fff"/>
+                            <circle  cx="55"   cy="74" r="0.7" fill="#fff" opacity="0.85"/>
+                        </g>
+                        <g class="mascot-eye mascot-eye-right">
+                            <ellipse cx="80" cy="72" rx="4.5" ry="6.5" fill="#3a2438"/>
+                            <ellipse cx="80" cy="72" rx="4.5" ry="6.5" fill="url(#bunnyEyeShine)"/>
+                            <circle  cx="81.5" cy="69" r="1.5" fill="#fff"/>
+                            <circle  cx="79"   cy="74" r="0.7" fill="#fff" opacity="0.85"/>
+                        </g>
+                    </g>
+
+                    <!-- Pink rounded triangle nose -->
+                    <path d="M 64,82 Q 68,80 72,82 Q 70.5,87 68,87.5 Q 65.5,87 64,82 Z"
+                          fill="url(#bunnyNose)"
+                          stroke="rgba(160,60,80,0.45)" stroke-width="0.5"/>
+
+                    <!-- Tiny mouth: small Y under the nose -->
+                    <path d="M 68,87.5 L 68,90.5
+                             M 68,90.5 Q 65,92.5 63.5,91
+                             M 68,90.5 Q 71,92.5 72.5,91"
+                          stroke="#5a2b3e" stroke-width="1.3" fill="none" stroke-linecap="round"/>
+
+                    <!-- Subtle whiskers (3 per side) -->
+                    <g class="mascot-whiskers"
+                       stroke="rgba(120,80,90,0.4)" stroke-width="0.7"
+                       stroke-linecap="round" fill="none">
+                        <path d="M 38,86 Q 30,84 22,86"/>
+                        <path d="M 38,89 Q 30,90 22,91"/>
+                        <path d="M 38,92 Q 31,93 24,95"/>
+                        <path d="M 98,86 Q 106,84 114,86"/>
+                        <path d="M 98,89 Q 106,90 114,91"/>
+                        <path d="M 98,92 Q 105,93 112,95"/>
+                    </g>
+                </svg>
+            </div>
+            <div class="chat-mascot-typing">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+
         <!-- Chat Messages Area -->
         <div class="chat-messages" id="chatMessages">
             <!-- Welcome Message -->
