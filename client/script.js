@@ -186,10 +186,14 @@ function openJournal() {
 }
 
 function startCalmingMusic() {
-    showNotification('Opening calming music...', 'info');
-
     if (typeof window.toggleSoundCloudWidget === 'function') {
-        window.toggleSoundCloudWidget();
+        const state = window.toggleSoundCloudWidget();
+
+        if (state === 'opened') {
+            showNotification('Opening calming music...', 'info');
+        } else {
+            showNotification('Closing calming music...', 'info');
+        }
     }
 }
 

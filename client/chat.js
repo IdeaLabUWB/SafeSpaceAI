@@ -463,15 +463,40 @@ class ChatInterface {
                 },
                 body: JSON.stringify({ userMessage })
             });
-    
-            const data = await response.json();
-    
+
+            let data = {};
+            try {
+                data = await response.json();
+            } catch {
+                // non-JSON body
+            }
+
             this.hideTypingIndicator();
-            this.addMessage(data.reply, "bot");
+
+            if (!response.ok) {
+                const detail = data.detail;
+                const msg =
+                    typeof detail === "string"
+                        ? detail
+                        : Array.isArray(detail)
+                          ? detail.map((d) => d.msg || d).join(" ")
+                          : `Request failed (${response.status}).`;
+                this.addMessage(msg || "Something went wrong. Please try again.", "bot");
+                return;
+            }
+
+            this.addMessage(data.reply ?? "No reply from server.", "bot");
     
         } catch (err) {
             this.hideTypingIndicator();
-            this.addMessage("Sorry, I’m having trouble connecting right now.", "bot");
+            const reason = err && err.message ? err.message : String(err);
+            const isNetwork =
+                /failed to fetch|networkerror|load failed|aborted/i.test(reason) ||
+                err.name === "TypeError";
+            const hint = isNetwork
+                ? `Cannot reach the API at ${APP_CONFIG.apiBaseUrl}. Start the backend (e.g. python server.py in the server folder), ensure client/config.js matches your PORT in server/.env, and open the site over http://localhost (not as a file:// page).`
+                : reason;
+            this.addMessage(`Sorry, I couldn’t reach the server. ${hint}`, "bot");
             console.error("RAG API Error:", err);
         }
     }

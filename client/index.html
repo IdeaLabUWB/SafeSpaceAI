@@ -204,17 +204,17 @@
                             <a href="tel:1-800-273-8255" class="emergency-btn">National Suicide Prevention Lifeline</a>
                         </div>
                     </div>
-                    <!-- Floating SoundCloud Widget -->
-                    <div id="floating-player" class="floating-player hidden">
-                        <div id="floating-header" class="floating-header">
-                            <span>🎵 Calming Sounds</span>
-                            <button id="floating-close">✕</button>
-                        </div>
-                        <div id="soundcloud-container"></div>
-                    </div>
                 </div>
             </div>
         </main>
+    </div>
+
+    <div id="floating-player" class="floating-player hidden" role="dialog" aria-modal="true" aria-label="Music therapy player">
+        <div id="floating-header" class="floating-header">
+            <span>🎵 Music Therapy</span>
+            <button id="floating-close" class="floating-close-btn" aria-label="Close music player">✕</button>
+        </div>
+        <div id="soundcloud-container"></div>
     </div>
 
     <div class="breathing-modal" id="breathingModal" aria-hidden="true">
