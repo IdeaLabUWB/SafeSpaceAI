@@ -99,9 +99,11 @@ def main():
     """Main ingestion pipeline"""
     print("=== RAG Document Ingestion Pipeline ===\n")
     
-    # Define paths
+    # Define paths (same Chroma folder the FastAPI server reads: server/db/chroma_db)
     docs_path = Path(__file__).resolve().parent / "docs"
-    persistent_directory = "db/chroma_db"
+    persistent_directory = str(
+        Path(__file__).resolve().parents[1] / "server" / "db" / "chroma_db"
+    )
     
     # # Check if vector store already exists
     # if os.path.exists(persistent_directory):

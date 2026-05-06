@@ -3,8 +3,8 @@
  * Change these if you run the backend or frontend on different ports.
  */
 const APP_CONFIG = {
-    /** Backend API base URL (default: backend on port 3000) */
-    apiBaseUrl: "http://localhost:3000",
+    /** Must match PORT in server/.env (default backend: 3001 if unset in Python) */
+    apiBaseUrl: "http://localhost:3001",
     /** Frontend port (for reference; used when serving with e.g. python -m http.server 5500) */
     frontendPort: 5500
 };

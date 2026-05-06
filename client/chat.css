@@ -795,7 +795,7 @@
     height: var(--dot-size);
     border-radius: 50%;
     background: linear-gradient(135deg, var(--primary-peach), var(--primary-blush));
-    box-shadow: 0 10px 24px rgba(245, 168, 198, 0.34);
+    box-shadow: 0 10px 24px rgb(189 23 86);
     transition: top 1s linear, left 1s linear, background 0.4s ease;
 }
 
@@ -909,8 +909,8 @@
     position: fixed;
     bottom: 20px;
     right: 20px;
-    width: 380px;
-    height: 480px;
+    width: 350px;
+    height: 400px;
     background: white;
     border-radius: 18px;
     box-shadow: 0 12px 40px rgba(0,0,0,0.2);
@@ -926,7 +926,7 @@
 
 .floating-header {
     background: var(--primary-sage);
-    color: white;
+    color: #000;
     padding: 12px 16px;
     display: flex;
     justify-content: space-between;
@@ -938,7 +938,7 @@
 .floating-header button {
     background: none;
     border: none;
-    color: white;
+    color: #000;
     font-size: 16px;
     cursor: pointer;
 }
