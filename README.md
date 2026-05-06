@@ -68,9 +68,11 @@ Copy `server/.env.example` to `server/.env` and fill values:
 ```env
 OPENAI_API_KEY=your_openai_api_key
 GEMINI_API_KEY=your_gemini_api_key
-PORT=3000
+PORT=3001
 FRONTEND_ORIGIN=http://localhost:5500
 ```
+
+Set `PORT` to any free port (default in code is **3001** so another app can keep using **3000**). The same port must appear in `client/config.js` as `apiBaseUrl` (e.g. `http://localhost:3001`).
 
 ### 3) Run ingestion_pipeline -> backend
 
@@ -82,7 +84,7 @@ cd server
 python server.py
 ```
 
-Backend default: `http://localhost:3000`
+Backend default: `http://localhost:3001` (or whatever you set as `PORT`)
 
 ### 4) Run frontend
 
