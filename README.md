@@ -1,14 +1,40 @@
 # SafeSpace AI
 
-A CBT-grounded mental health support chatbot built on a full-stack RAG architecture. SafeSpace AI combines evidence-based therapeutic structure with modern AI engineering — retrieval-augmented generation, a structured response harness, and a calm, accessible UI.
+A CBT-grounded mental health support chatbot built on a full-stack RAG architecture. SafeSpace AI combines evidence-based therapeutic structure with modern AI engineering , retrieval-augmented generation, a structured response harness, and a calm, accessible UI.
 
-> **Portfolio artifact.** This project demonstrates production-grade AI application development. It is not a replacement for professional care.
+> 
 
 ---
 
 ## Key Technical Features
 
-### 1. CBT-Structured Response Harness
+### 1. RAG Pipeline (Retrieval-Augmented Generation)
+
+The backend retrieves CBT knowledge before every generation call, grounding responses in clinical material rather than model priors alone.
+
+```
+User message
+     │
+     ▼
+OpenAI text-embedding-3-small  ──►  Chroma vector store (cosine MMR)
+                                         │
+                              technique-filtered retrieval (k=3, fetch_k=10)
+                                         │ fallback: relaxed retrieval
+                                         ▼
+                              Top-k context chunks injected into prompt
+                                         │
+                                         ▼
+                              Google Gemini (configurable model)
+                                         │
+                                         ▼
+                              parse_sections() → structured JSON response
+```
+
+- **MMR retrieval** (Maximal Marginal Relevance) reduces redundant chunks and improves context diversity.
+- **Two-tier retrieval**: technique-filtered first, relaxed fallback if no results.
+- **Knowledge base**: Two clinical CBT texts chunked and embedded at ingestion time.
+
+### 2. CBT-Structured Response Harness
 
 Every AI response is parsed into a typed, structured format and rendered as a visual card UI — not a wall of text. The backend extracts five discrete CBT sections from the model output:
 
@@ -35,32 +61,6 @@ The `/rag` endpoint returns structured JSON so the frontend can render each sect
   "raw": "..."
 }
 ```
-
-### 2. RAG Pipeline (Retrieval-Augmented Generation)
-
-The backend retrieves CBT knowledge before every generation call, grounding responses in clinical material rather than model priors alone.
-
-```
-User message
-     │
-     ▼
-OpenAI text-embedding-3-small  ──►  Chroma vector store (cosine MMR)
-                                         │
-                              technique-filtered retrieval (k=3, fetch_k=10)
-                                         │ fallback: relaxed retrieval
-                                         ▼
-                              Top-k context chunks injected into prompt
-                                         │
-                                         ▼
-                              Google Gemini (configurable model)
-                                         │
-                                         ▼
-                              parse_sections() → structured JSON response
-```
-
-- **MMR retrieval** (Maximal Marginal Relevance) reduces redundant chunks and improves context diversity.
-- **Two-tier retrieval**: technique-filtered first, relaxed fallback if no results.
-- **Knowledge base**: Two clinical CBT texts chunked and embedded at ingestion time.
 
 ### 3. CBT Prompt Engineering
 
@@ -276,7 +276,8 @@ The script provisions: ECR repository → Docker build + push → Lambda functio
 ![Landing Page](screenshots/Landing%20Page.png)
 
 ### CBT Chat with Response Harness
-![Chat Support](screenshots/CBT%20grounded%20AI%20chatbot.png)
+![Chat Support](screenshotsCBT%20grounded%20AI%20safespace_response_demo.png)
+
 
 ### Box Breathing Visualizer
 ![Breathing](screenshots/Breathing%20Visualiser.png)
