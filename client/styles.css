@@ -137,7 +137,6 @@ body {
     width: 100%;
 }
 
-/* Card Styles */
 .dashboard-card {
     background: rgba(255, 248, 220, 0.75);
     border-radius: 20px;
@@ -164,7 +163,6 @@ body {
     margin-bottom: 8px;
 }
 
-/* Welcome Card */
 .welcome-card {
     grid-area: feel;
     background:
@@ -190,7 +188,7 @@ body {
 
 .mood-buttons {
     display: flex;
-    gap: 12px;
+    gap: 8px;
     flex-wrap: wrap;
 }
 
@@ -198,9 +196,9 @@ body {
     background: rgba(255, 249, 231, 0.9);
     border: 2px solid rgba(191, 167, 125, 0.6);
     border-radius: 50%;
-    width: 50px;
-    height: 50px;
-    font-size: 1.5rem;
+    width: 40px;
+    height: 40px;
+    font-size: 1.2rem;
     cursor: pointer;
     transition: all 0.3s ease;
     box-shadow: 0 6px 14px rgba(170, 132, 80, 0.35);
@@ -212,11 +210,10 @@ body {
 }
 
 .mood-btn.selected {
-    background: rgba(255, 255, 255, 0.4);
-    border-color: rgba(255, 255, 255, 0.6);
+    background: rgba(255, 255, 255, 0.48);
+    border-color: rgba(255, 255, 255, 0.9);
 }
 
-/* Action Buttons */
 .action-buttons {
     display: flex;
     flex-direction: column;
@@ -258,7 +255,6 @@ body {
     font-size: 1.2rem;
 }
 
-/* Progress Stats */
 .progress-stats {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -268,24 +264,23 @@ body {
 .stat-item {
     text-align: center;
     padding: 16px;
-    background: var(--warm-gray);
-    border-radius: var(--border-radius-small);
+    background: var(--surface-strong);
+    border-radius: var(--radius-small);
 }
 
 .stat-number {
     font-size: 2rem;
     font-weight: 600;
-    color: var(--accent-green);
+    color: var(--lavender-600);
     margin-bottom: 4px;
 }
 
 .stat-label {
     font-size: 0.9rem;
-    color: var(--text-gray);
+    color: var(--text-secondary);
     font-weight: 400;
 }
 
-/* Activity List */
 .activity-list {
     display: flex;
     flex-direction: column;
@@ -314,19 +309,18 @@ body {
 
 .activity-title {
     font-weight: 500;
-    color: var(--dark-gray);
+    color: var(--text-primary);
 }
 
 .activity-time {
     font-size: 0.9rem;
-    color: var(--text-gray);
+    color: var(--text-secondary);
 }
 
-/* Resource Links */
 .resource-links {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 8px;
 }
 
 .resource-link {
@@ -337,7 +331,7 @@ body {
     background: rgba(247, 243, 255, 0.96);
     border-radius: var(--border-radius-small);
     text-decoration: none;
-    color: var(--dark-gray);
+    color: var(--text-primary);
     transition: all 0.3s ease;
 }
 
@@ -350,7 +344,20 @@ body {
     font-size: 1.2rem;
 }
 
-/* Emergency Card */
+.emergency-support {
+    margin-top: 22px;
+    padding: 18px;
+    border-radius: var(--radius-small);
+    background: linear-gradient(145deg, rgba(246, 233, 255, 0.95), rgba(229, 215, 255, 0.92));
+    border: 1px solid rgba(191, 163, 255, 0.35);
+}
+
+.emergency-support h3 {
+    margin-bottom: 10px;
+    font-size: 1rem;
+    color: var(--text-primary);
+}
+
 .emergency-card {
     background: linear-gradient(145deg, #ffe9d9 0%, #ffeef0 45%, #ffe2e0 100%);
     color: #4d3b27;
@@ -359,12 +366,13 @@ body {
 .emergency-text {
     margin-bottom: 8px;
     font-weight: 500;
+    font-size: 0.92rem;
 }
 
 .emergency-contacts {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 6px;
 }
 
 .emergency-btn {
@@ -375,9 +383,10 @@ body {
     text-decoration: none;
     color: #4b2f25;
     font-weight: 500;
+    font-size: 0.9rem;
     text-align: center;
     transition: all 0.3s ease;
-    border: 1px solid rgba(255, 255, 255, 0.3);
+    border: 1px solid rgba(150, 120, 196, 0.24);
 }
 
 .emergency-btn:hover {
@@ -476,27 +485,37 @@ body {
 
 /* Responsive Design */
 @media (max-width: 768px) {
+    body {
+        overflow: auto;
+    }
+
     .dashboard-container {
+        height: auto;
+        min-height: 100vh;
+        overflow: visible;
         padding: 16px;
     }
-    
+
     .app-title {
-        font-size: 2.5rem;
+        font-size: 2.1rem;
     }
-    
-    .app-subtitle {
-        font-size: 1rem;
+
+    .title-brand {
+        min-height: 82px;
     }
-    
+
+    .title-lotus {
+        max-height: 92px;
+        opacity: 0.4;
+    }
+
     .dashboard-grid {
         grid-template-columns: 1fr;
+        grid-template-rows: auto;
         gap: 16px;
+        height: auto;
     }
-    
-    .progress-stats {
-        grid-template-columns: 1fr;
-    }
-    
+
     .mood-buttons {
         justify-content: center;
     }
@@ -504,13 +523,21 @@ body {
 
 @media (max-width: 480px) {
     .app-title {
-        font-size: 2rem;
+        font-size: 1.8rem;
     }
-    
+
+    .title-brand {
+        min-height: 74px;
+    }
+
+    .title-lotus {
+        max-height: 80px;
+    }
+
     .dashboard-card {
-        padding: 20px;
+        padding: 14px;
     }
-    
+
     .mood-btn {
         width: 45px;
         height: 45px;

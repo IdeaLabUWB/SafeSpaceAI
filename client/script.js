@@ -968,11 +968,11 @@ function showMoodFeedback(mood) {
 
 function getMoodMessage(mood) {
     const messages = {
-        'great': 'Wonderful! Keep up the positive energy! 🌟',
-        'good': 'That\'s great to hear! 😊',
-        'okay': 'It\'s okay to have neutral days. 💙',
+        'happy': 'Wonderful! Keep up the positive energy! 🌟',
+        'neutral': 'Thanks for checking in. A neutral day is completely okay. 💙',
         'anxious': 'I\'m here to help. Let\'s work through this together. 🤗',
-        'overwhelmed': 'Take a deep breath. You\'re not alone. 💙'
+        'uneasy': 'Thanks for sharing this. Let\'s slow down and reset together. 🌿',
+        'not_ok': 'I\'m here with you. Let\'s take one small step together right now. 💙'
     };
     return messages[mood] || 'Thank you for sharing how you feel.';
 }
@@ -988,48 +988,22 @@ function handleActionClick(button) {
     
     // Handle different actions
     switch(actionText) {
-        case 'Start Chat':
-            startChatSession();
+        case 'Music Therapy':
+            startCalmingMusic();
             break;
-        case 'Breathing Exercise':
-            startBreathingExercise();
-            break;
-        case 'Journal Entry':
-            openJournal();
-            break;
-        default:
-            console.log(`Action clicked: ${actionText}`);
     }
 }
 
-function startChatSession() {
-    // Simulate starting a chat session
-    showNotification('Starting chat session...', 'info');
-    
-    // In a real app, this would navigate to the chat interface
-    setTimeout(() => {
-        showNotification('Chat session ready! 💬', 'success');
-    }, 1000);
-}
+function startCalmingMusic() {
+    if (typeof window.toggleSoundCloudWidget === 'function') {
+        const state = window.toggleSoundCloudWidget();
 
-function startBreathingExercise() {
-    // Simulate starting breathing exercise
-    showNotification('Preparing breathing exercise...', 'info');
-    
-    // In a real app, this would open the breathing exercise interface
-    setTimeout(() => {
-        showNotification('Breathing exercise started 🧘', 'success');
-    }, 1000);
-}
-
-function openJournal() {
-    // Simulate opening journal
-    showNotification('Opening journal...', 'info');
-    
-    // In a real app, this would open the journal interface
-    setTimeout(() => {
-        showNotification('Journal ready for your thoughts 📝', 'success');
-    }, 1000);
+        if (state === 'opened') {
+            showNotification('Opening calming music...', 'info');
+        } else {
+            showNotification('Closing calming music...', 'info');
+        }
+    }
 }
 
 function handleResourceClick(link) {
@@ -1128,51 +1102,3 @@ function loadUserData() {
     }, 500);
 }
 
-// Add CSS animations
-const style = document.createElement('style');
-style.textContent = `
-    @keyframes slideIn {
-        from {
-            transform: translateX(100%);
-            opacity: 0;
-        }
-        to {
-            transform: translateX(0);
-            opacity: 1;
-        }
-    }
-    
-    @keyframes slideOut {
-        from {
-            transform: translateX(0);
-            opacity: 1;
-        }
-        to {
-            transform: translateX(100%);
-            opacity: 0;
-        }
-    }
-    
-    @keyframes slideInUp {
-        from {
-            transform: translateY(100%);
-            opacity: 0;
-        }
-        to {
-            transform: translateY(0);
-            opacity: 1;
-        }
-    }
-    
-    @keyframes slideOutDown {
-        from {
-            transform: translateY(0);
-            opacity: 1;
-        }
-        to {
-            transform: translateY(100%);
-            opacity: 0;
-        }
-    }
-`;
-document.head.appendChild(style);

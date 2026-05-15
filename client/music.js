@@ -66,7 +66,14 @@ function toggleSoundCloudWidget() {
         });
     }
 
-    player.classList.remove('hidden');
+    // ✅ Toggle + return state
+    if (player.classList.contains('hidden')) {
+        player.classList.remove('hidden');
+        return 'opened';
+    } else {
+        player.classList.add('hidden');
+        return 'closed';
+    }
 }
 
 window.toggleSoundCloudWidget = toggleSoundCloudWidget;
@@ -76,9 +83,19 @@ document.addEventListener('DOMContentLoaded', function () {
     const header = document.getElementById('floating-header');
     const closeBtn = document.getElementById('floating-close');
 
+    player.addEventListener('click', function (e) {
+        // Prevent header drag from triggering toggle
+        if (isDragging) return;
+    
+        // Optional: ignore clicks on iframe area
+        if (e.target.tagName.toLowerCase() === 'iframe') return;
+    
+        toggleSoundCloudWidget();
+    });
+    
     // Close button
     closeBtn.addEventListener('click', function () {
-        player.classList.add('hidden');
+        toggleSoundCloudWidget();
     });
 
     // Dragging logic
@@ -94,8 +111,22 @@ document.addEventListener('DOMContentLoaded', function () {
 
     document.addEventListener('mousemove', function (e) {
         if (!isDragging) return;
-        player.style.left = e.clientX - offsetX + 'px';
-        player.style.top = e.clientY - offsetY + 'px';
+    
+        let newLeft = e.clientX - offsetX;
+        let newTop = e.clientY - offsetY;
+    
+        const playerRect = player.getBoundingClientRect();
+    
+        const maxLeft = window.innerWidth - playerRect.width;
+        const maxTop = window.innerHeight - playerRect.height;
+    
+        // Clamp values
+        newLeft = Math.max(0, Math.min(newLeft, maxLeft));
+        newTop = Math.max(0, Math.min(newTop, maxTop));
+    
+        player.style.left = newLeft + 'px';
+        player.style.top = newTop + 'px';
+    
         player.style.bottom = 'auto';
         player.style.right = 'auto';
     });

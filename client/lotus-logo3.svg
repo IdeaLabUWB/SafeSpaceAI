@@ -1,0 +1,35 @@
+<svg width="520" height="280" viewBox="0 0 520 280" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="petalMain" x1="260" y1="36" x2="260" y2="240" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#F3E8FF"/>
+      <stop offset="1" stop-color="#B58EEB"/>
+    </linearGradient>
+    <linearGradient id="petalSide" x1="98" y1="68" x2="214" y2="224" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#EBD9FF"/>
+      <stop offset="1" stop-color="#9F79DE"/>
+    </linearGradient>
+    <linearGradient id="petalSideRight" x1="422" y1="68" x2="306" y2="224" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#EBD9FF"/>
+      <stop offset="1" stop-color="#9F79DE"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(260 188) rotate(90) scale(96 220)">
+      <stop stop-color="#FFFFFF" stop-opacity="0.85"/>
+      <stop offset="1" stop-color="#FFFFFF" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="softBlur" x="0" y="0" width="520" height="280" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feGaussianBlur stdDeviation="22"/>
+    </filter>
+  </defs>
+
+  <g filter="url(#softBlur)" opacity="0.35">
+    <ellipse cx="260" cy="212" rx="190" ry="34" fill="#D6B8FF"/>
+  </g>
+
+  <path d="M260 54C296 96 309 139 260 214C211 139 224 96 260 54Z" fill="url(#petalMain)"/>
+  <path d="M182 82C218 116 236 148 220 214C171 179 149 137 182 82Z" fill="url(#petalSide)"/>
+  <path d="M338 82C302 116 284 148 300 214C349 179 371 137 338 82Z" fill="url(#petalSideRight)"/>
+  <path d="M118 120C164 142 193 172 208 214C149 203 105 181 118 120Z" fill="#B994EC" opacity="0.85"/>
+  <path d="M402 120C356 142 327 172 312 214C371 203 415 181 402 120Z" fill="#B994EC" opacity="0.85"/>
+  <path d="M260 98C282 124 289 154 260 206C231 154 238 124 260 98Z" fill="#F8F0FF" opacity="0.92"/>
+  <ellipse cx="260" cy="188" rx="116" ry="52" fill="url(#glow)"/>
+</svg>

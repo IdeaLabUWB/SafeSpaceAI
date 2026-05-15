@@ -53,8 +53,8 @@
         <div class="chat-header">
             <div class="chat-header-content">
                 <div class="chat-title-section">
-                    <button class="back-btn" id="backBtn">
-                        <span class="back-icon">←</span>
+                    <button class="back-btn" id="backBtn" aria-label="Back to dashboard">
+                        <span class="back-icon" aria-hidden="true">←</span>
                     </button>
                     <div class="chat-title">
                         <h1>SafeSpace AI</h1>
@@ -234,8 +234,8 @@
                     <button class="mic-btn" id="micBtn" type="button" aria-label="Start voice input">
                         <span class="mic-icon">🎙</span>
                     </button>
-                    <button class="send-btn" id="sendBtn">
-                        <span class="send-icon">→</span>
+                    <button class="send-btn" id="sendBtn" aria-label="Send message">
+                        <span class="send-icon" aria-hidden="true">→</span>
                     </button>
                 </div>
                 <div class="voice-status" id="voiceStatus" aria-live="polite"></div>
@@ -283,10 +283,10 @@
                     </div>
                 </div>
 
-                <!-- Quick Actions -->
+                <!-- Wellness Tools -->
                 <div class="dashboard-card actions-card">
                     <div class="card-header">
-                        <h2>Quick Actions</h2>
+                        <h2>Wellness Tools</h2>
                     </div>
                     <div class="action-buttons">
                         <button class="action-btn primary" id="startChatBtn">
@@ -341,7 +341,7 @@
                     </div>
                 </div> -->
 
-                <!-- Resources -->
+                <!-- Resources and Emergency Support -->
                 <div class="dashboard-card resources-card">
                     <div class="card-header">
                         <h2>Helpful Resources</h2>
@@ -394,6 +394,14 @@
         </main>
     </div>
 
+    <div id="floating-player" class="floating-player hidden" role="dialog" aria-modal="true" aria-label="Music therapy player">
+        <div id="floating-header" class="floating-header">
+            <span>🎵 Music Therapy</span>
+            <button id="floating-close" class="floating-close-btn" aria-label="Close music player">✕</button>
+        </div>
+        <div id="soundcloud-container"></div>
+    </div>
+
     <div class="breathing-modal" id="breathingModal" aria-hidden="true">
         <div class="breathing-panel" role="dialog" aria-modal="true" aria-labelledby="breathingTitle">
             <div class="ghibli-bg-slot" data-ghibli-scope="modal"></div>
@@ -431,6 +439,7 @@
         </div>
     </div>
 
+    <script src="config.js"></script>
     <script src="music.js"></script>
     <script src="script.js"></script>
     <script src="chat.js"></script>
