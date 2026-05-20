@@ -1,0 +1,77 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  SafeSpace AI — CBT chatbot on Lambda.
+  Pay-per-request: $0 idle cost (only ECR storage ~$0.10/mo).
+  One-command teardown: sam delete --stack-name safespace-ai
+
+# ---------------------------------------------------------------------------
+# Globals applied to every Lambda function in this template
+# ---------------------------------------------------------------------------
+Globals:
+  Function:
+    Timeout: 60       # Gemini API calls can take ~10 s; leave headroom
+    MemorySize: 1536  # ChromaDB + LangChain need decent RAM
+
+# ---------------------------------------------------------------------------
+# Parameters — passed at deploy time, never stored in plaintext
+# ---------------------------------------------------------------------------
+Parameters:
+  GeminiApiKey:
+    Type: String
+    NoEcho: true
+    Description: Google Gemini API key
+  OpenAIApiKey:
+    Type: String
+    NoEcho: true
+    Description: OpenAI API key (used for text-embedding-3-small)
+  GeminiModel:
+    Type: String
+    Default: gemini-2.5-flash-lite
+    Description: Primary Gemini model name
+  GeminiFallbackModel:
+    Type: String
+    Default: gemini-2.0-flash-lite
+    Description: Fallback model on 429 rate-limit (set to "" to disable)
+
+# ---------------------------------------------------------------------------
+# Resources
+# ---------------------------------------------------------------------------
+Resources:
+  SafeSpaceFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      PackageType: Image
+      Architectures: [x86_64]
+
+      # Lambda Function URL — free HTTPS endpoint, no API Gateway needed
+      FunctionUrlConfig:
+        AuthType: NONE   # app is public; add Cognito/JWT here later if needed
+        Cors:
+          AllowOrigins: ['*']
+          AllowMethods: ['*']
+          AllowHeaders: ['*']
+
+      Environment:
+        Variables:
+          GEMINI_API_KEY:        !Ref GeminiApiKey
+          OPENAI_API_KEY:        !Ref OpenAIApiKey
+          GEMINI_MODEL:          !Ref GeminiModel
+          GEMINI_FALLBACK_MODEL: !Ref GeminiFallbackModel
+          # tiktoken writes its tokenizer cache to /tmp (only writable dir in Lambda)
+          TIKTOKEN_CACHE_DIR:    /tmp/tiktoken-cache
+          # Lambda Web Adapter expects the app on this port
+          PORT:                  "8080"
+
+    Metadata:
+      DockerTag: safespace-ai
+      DockerContext: .      # repo root (contains Dockerfile, server/, client/)
+      Dockerfile: Dockerfile
+
+# ---------------------------------------------------------------------------
+# Outputs
+# ---------------------------------------------------------------------------
+Outputs:
+  AppUrl:
+    Description: "SafeSpace AI — open this URL in your browser"
+    Value: !GetAtt SafeSpaceFunctionUrl.FunctionUrl

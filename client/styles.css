@@ -101,13 +101,17 @@ body {
     box-shadow: none !important;
     padding: 0 !important;
     display: flex;
+    flex-direction: column;
     align-items: center;
-    justify-content: space-between;
+    justify-content: center;
+    text-align: center;
+    gap: 2px;
 }
 
 .header-left {
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: 12px;
 }
 
@@ -120,29 +124,54 @@ body {
 .header-title-group {
     display: flex;
     flex-direction: column;
+    align-items: flex-start;
 }
 
 .app-title {
-    font-family: 'Quicksand', sans-serif !important;
-    font-size: clamp(1.6rem, 3vw, 2.2rem) !important;
-    font-weight: 700 !important;
-    background: linear-gradient(135deg, #a23a2e 0%, #c84d36 22%, #e87248 48%, #d35a78 75%, #7a4ea5 100%) !important;
+    font-family: 'SKAY', 'Baloo 2', 'Fredoka', 'Arial Rounded MT Bold', 'Quicksand', sans-serif !important;
+    font-size: clamp(1.7rem, 3.2vw, 2.35rem) !important;
+    font-weight: 900 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.08em !important;
+
+    /* ── Cloud colour: bright white on top, soft sky-blue beneath ── */
+    background: linear-gradient(175deg,
+        #ffffff   0%,
+        #eef7ff  30%,
+        #cce8ff  65%,
+        #a8d4f8 100%) !important;
     -webkit-background-clip: text !important;
     background-clip: text !important;
     -webkit-text-fill-color: transparent !important;
+    -webkit-text-stroke: 1.2px rgba(255, 255, 255, 0.85) !important;
     color: transparent !important;
+
+    /* ── Fluffy cloud puff ──
+       Layer 1–2 : tight white bloom right around each letter
+       Layer 3–4 : mid soft sky-blue halo for the airy glow
+       Layer 5–8 : directional white puffs in four directions → puffy edges
+       Layer 9   : wide dreamy sky-blue atmosphere
+       Layer 10  : gentle underside shadow so the cloud "floats"        */
     filter:
-        drop-shadow(0 1px 0 rgba(255,255,255,0.85))
-        drop-shadow(0 2px 6px rgba(120,40,40,0.35))
-        drop-shadow(0 0 22px rgba(255,180,130,0.6)) !important;
+        drop-shadow(0  0  4px rgba(255, 255, 255, 1.0))
+        drop-shadow(0  0 10px rgba(255, 255, 255, 0.95))
+        drop-shadow(0  0 18px rgba(210, 238, 255, 0.88))
+        drop-shadow(0  0 30px rgba(170, 220, 255, 0.70))
+        drop-shadow( 4px  0 10px rgba(255, 255, 255, 0.75))
+        drop-shadow(-4px  0 10px rgba(255, 255, 255, 0.75))
+        drop-shadow( 0 -4px  8px rgba(255, 255, 255, 0.72))
+        drop-shadow( 0  4px  8px rgba(255, 255, 255, 0.60))
+        drop-shadow( 0  0  50px rgba(140, 200, 255, 0.45))
+        drop-shadow( 0  6px 14px rgba(100, 170, 230, 0.30)) !important;
+
     margin: 0 !important;
-    line-height: 1.1;
+    line-height: 1;
 }
 
 .app-subtitle {
-    color: rgba(255,246,224,0.92) !important;
+    color: rgba(230, 246, 255, 0.92) !important;
     font-size: 0.85rem !important;
-    text-shadow: 0 1px 8px rgba(80,30,40,0.4) !important;
+    text-shadow: 0 1px 10px rgba(120, 180, 230, 0.55), 0 0 20px rgba(255,255,255,0.4) !important;
     font-weight: 500 !important;
     margin: 0 !important;
 }
@@ -150,13 +179,15 @@ body {
 .header-right {
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: 14px;
-    text-align: right;
+    text-align: center;
 }
 
 .header-welcome-text {
     display: flex;
     flex-direction: column;
+    align-items: center;
 }
 
 .header-welcome-title {
@@ -386,7 +417,7 @@ body {
 .breathaff-row {
     grid-area: breathaff;
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr;
     gap: 12px;
 }
 
@@ -575,6 +606,12 @@ body {
     display: flex;
     flex-direction: column;
     padding: 18px 20px;
+    cursor: pointer;
+}
+
+.chat-preview-card:focus-visible {
+    outline: 3px solid rgba(130,90,200,0.5);
+    outline-offset: 4px;
 }
 
 .chat-preview-header {
@@ -689,6 +726,15 @@ body {
 .chat-preview-input::placeholder { color: #b09a8a; }
 .chat-preview-input:focus { border-color: rgba(130,90,200,0.5); }
 
+.chat-preview-card input,
+.chat-preview-card button {
+    cursor: auto;
+}
+
+.chat-preview-card button {
+    cursor: pointer;
+}
+
 .chat-preview-send {
     width: 42px;
     height: 42px;
@@ -720,105 +766,121 @@ body {
    ============================================================ */
 .emergency-card {
     grid-area: emergency;
-    background: rgba(255,240,232,0.88) !important;
-    border: 1px solid rgba(220,150,130,0.45) !important;
+    padding: 11px 13px;
+    background: rgba(255, 252, 248, 0.6) !important;
+    border: 1px solid rgba(200, 185, 175, 0.35) !important;
+    box-shadow: 0 4px 12px rgba(100, 70, 60, 0.08) !important;
+}
+
+/* Suppress the generic hover lift so it doesn't draw extra attention */
+.emergency-card:hover {
+    transform: none;
+    box-shadow: 0 4px 12px rgba(100, 70, 60, 0.08) !important;
 }
 
 .emergency-card .card-header {
     display: flex;
     align-items: center;
-    gap: 10px;
-    margin-bottom: 10px;
+    gap: 6px;
+    margin-bottom: 6px;
 }
 
 .emergency-card .card-header h2 {
-    font-size: 1rem;
-    font-weight: 700;
-    color: #3e2723;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #6a5550;
 }
 
 .emergency-card-icon {
-    width: 32px;
-    height: 32px;
+    width: 18px;
+    height: 18px;
     border-radius: 50%;
-    background: rgba(255,100,100,0.15);
+    background: transparent;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1rem;
+    font-size: 0.75rem;
     flex-shrink: 0;
 }
 
 .emergency-text {
-    font-size: 0.82rem;
-    color: #6a3020;
-    margin-bottom: 12px;
-    font-weight: 500;
+    font-size: 0.72rem;
+    color: #7a6860;
+    margin-bottom: 8px;
+    font-weight: 400;
 }
 
 .emergency-contacts {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
 }
 
 .emergency-btn {
     display: flex;
     align-items: center;
-    gap: 10px;
-    padding: 12px 14px;
-    border-radius: 14px;
+    gap: 7px;
+    padding: 7px 10px;
+    border-radius: 9px;
     text-decoration: none;
-    font-weight: 700;
-    font-size: 0.88rem;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-    border: none;
+    font-weight: 600;
+    font-size: 0.78rem;
+    transition: background 0.2s ease, box-shadow 0.2s ease;
+    border: 1px solid transparent;
 }
 
 .emergency-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(0,0,0,0.18);
+    transform: none;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 }
 
 .emergency-btn-coral {
-    background: linear-gradient(135deg, #f87171, #ef4444);
-    color: white;
-    box-shadow: 0 4px 14px rgba(239,68,68,0.35);
+    background: rgba(220, 90, 70, 0.09);
+    color: #9b3a2a;
+    border-color: rgba(220, 90, 70, 0.22);
+}
+
+.emergency-btn-coral:hover {
+    background: rgba(220, 90, 70, 0.15);
 }
 
 .emergency-btn-purple {
-    background: linear-gradient(135deg, #a78bfa, #7c3aed);
-    color: white;
-    box-shadow: 0 4px 14px rgba(124,58,237,0.35);
+    background: rgba(110, 70, 180, 0.09);
+    color: #5a3a8a;
+    border-color: rgba(110, 70, 180, 0.22);
+}
+
+.emergency-btn-purple:hover {
+    background: rgba(110, 70, 180, 0.15);
 }
 
 .emergency-btn-icon {
-    width: 28px;
-    height: 28px;
+    width: 20px;
+    height: 20px;
     border-radius: 50%;
-    background: rgba(255,255,255,0.25);
+    background: rgba(0, 0, 0, 0.05);
     display: flex;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
-    font-size: 0.85rem;
+    font-size: 0.72rem;
 }
 
 .emergency-btn-text {
     display: flex;
     flex-direction: column;
-    line-height: 1.15;
+    line-height: 1.2;
 }
 
 .emergency-btn-number {
-    font-size: 1rem;
-    font-weight: 800;
+    font-size: 0.82rem;
+    font-weight: 700;
 }
 
 .emergency-btn-label {
-    font-size: 0.68rem;
-    opacity: 0.9;
-    font-weight: 500;
+    font-size: 0.6rem;
+    opacity: 0.75;
+    font-weight: 400;
 }
 
 /* ============================================================
@@ -851,6 +913,35 @@ body {
 
 .remember-bar-text strong {
     font-weight: 700;
+}
+
+.affirmation-remember-bar {
+    border-radius: 22px;
+    padding: 10px 18px;
+}
+
+.affirmation-remember-bar .affirmation-single {
+    width: 100%;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.affirmation-remember-bar .affirmation-quote-icon {
+    color: rgba(255, 220, 235, 0.85);
+    font-size: 1.15rem;
+}
+
+.affirmation-remember-bar .affirmation-text-display {
+    color: rgba(255, 245, 230, 0.94);
+    margin: 0;
+    text-align: center;
+}
+
+.affirmation-remember-bar .affirmation-more-link {
+    color: #ffe0f0;
+    white-space: nowrap;
 }
 
 /* ============================================================
@@ -1049,13 +1140,27 @@ body {
     bottom: 20px;
     right: 20px;
     z-index: 50;
+    width: 340px;
     background: rgba(255,248,232,0.92) !important;
     border: 1px solid rgba(255,220,180,0.5) !important;
     border-radius: 18px !important;
     box-shadow: 0 12px 30px rgba(100,60,30,0.25) !important;
+    overflow: hidden;
+}
+
+#soundcloud-container {
+    width: 100%;
+    height: 166px; /* minimum height SoundCloud non-visual player needs */
+    overflow: hidden;
+    transition: height 0.3s ease;
+}
+
+.floating-player.collapsed #soundcloud-container {
+    height: 0;
 }
 
 .floating-player.hidden { display: none; }
+
 .floating-header {
     display: flex;
     align-items: center;
@@ -1065,7 +1170,26 @@ body {
     font-size: 0.88rem;
     color: #3e2723;
     border-bottom: 1px solid rgba(220,195,165,0.4);
+    cursor: pointer;
+    user-select: none;
 }
+
+/* Remove bottom border when collapsed so the header looks like a pill */
+.floating-player.collapsed .floating-header {
+    border-bottom-color: transparent;
+}
+
+.floating-title {
+    flex: 1;
+}
+
+.floating-header-btns {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+#floating-collapse,
 #floating-close {
     background: none;
     border: none;
@@ -1073,7 +1197,19 @@ body {
     font-size: 1rem;
     color: #7a5a4a;
     line-height: 1;
-    padding: 0;
+    padding: 2px 4px;
+    border-radius: 4px;
+    transition: background 0.15s ease, transform 0.3s ease;
+}
+
+#floating-collapse:hover,
+#floating-close:hover {
+    background: rgba(180, 120, 80, 0.12);
+}
+
+/* Flip chevron when collapsed */
+.floating-player.collapsed #floating-collapse {
+    transform: rotate(180deg);
 }
 
 /* ============================================================
@@ -1116,6 +1252,13 @@ body {
         #fbd9a8 0%, #f8b78a 22%, #f29a8e 42%, #d893a8 65%, #a98ac0 88%, #8a7ab2 100%) !important;
     background-attachment: fixed !important;
     color: var(--gsf-ink) !important;
+}
+
+body.is-calm-mood {
+    background: linear-gradient(180deg,
+        #d9eef4 0%, #cfe8ee 24%, #cddfed 48%, #d8d5ea 72%, #c7bedf 100%) !important;
+    background-image: linear-gradient(180deg,
+        #d9eef4 0%, #cfe8ee 24%, #cddfed 48%, #d8d5ea 72%, #c7bedf 100%) !important;
 }
 
 .app-shell {
@@ -1181,6 +1324,13 @@ body {
     animation: gsf-sky-shift 28s ease-in-out infinite alternate;
 }
 
+body.is-calm-mood .ghibli-scene-fixed .gsf-sky {
+    background:
+        radial-gradient(80% 55% at 50% 18%, rgba(235,248,255,0.58), transparent 65%),
+        radial-gradient(60% 40% at 18% 8%, rgba(205,232,238,0.38), transparent 70%),
+        radial-gradient(50% 45% at 85% 12%, rgba(220,214,238,0.34), transparent 70%);
+}
+
 .ghibli-scene-fixed .gsf-sun {
     position: absolute;
     top: 16%; left: 50%;
@@ -1192,6 +1342,11 @@ body {
     animation: gsf-sun-pulse 14s ease-in-out infinite;
 }
 
+body.is-calm-mood .ghibli-scene-fixed .gsf-sun {
+    background: radial-gradient(circle, rgba(245,252,255,0.72) 0%, rgba(215,235,238,0.48) 28%, rgba(190,215,230,0.22) 58%, transparent 82%);
+    box-shadow: 0 0 90px rgba(210,235,240,0.35), 0 0 180px rgba(190,210,230,0.22);
+}
+
 .ghibli-scene-fixed .gsf-glow {
     position: absolute;
     top: 5%; left: 50%;
@@ -1199,6 +1354,10 @@ body {
     transform: translateX(-50%);
     background: radial-gradient(ellipse at center, rgba(255,240,200,0.45) 0%, rgba(255,200,170,0.18) 45%, transparent 75%);
     filter: blur(60px);
+}
+
+body.is-calm-mood .ghibli-scene-fixed .gsf-glow {
+    background: radial-gradient(ellipse at center, rgba(230,248,255,0.34) 0%, rgba(196,220,232,0.18) 45%, transparent 75%);
 }
 
 .ghibli-scene-fixed .gsf-rays {
@@ -1218,6 +1377,10 @@ body {
     pointer-events: none;
 }
 
+body.is-calm-mood .ghibli-scene-fixed .gsf-rays {
+    opacity: 0.28;
+}
+
 .ghibli-scene-fixed .gsf-skyglow {
     position: absolute;
     inset: 0;
@@ -1228,6 +1391,13 @@ body {
     mix-blend-mode: screen;
     animation: gsf-skyglow-shift 28s ease-in-out infinite alternate;
     filter: blur(2px);
+}
+
+body.is-calm-mood .ghibli-scene-fixed .gsf-skyglow {
+    background:
+        radial-gradient(80% 60% at 50% 22%, rgba(224,244,250,0.48), transparent 70%),
+        radial-gradient(70% 50% at 70% 35%, rgba(205,224,238,0.36), transparent 70%),
+        radial-gradient(70% 50% at 30% 30%, rgba(218,210,236,0.32), transparent 75%);
 }
 
 .ghibli-scene-fixed .gsf-cloud-layer { position: absolute; inset: 0; }

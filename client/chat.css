@@ -43,6 +43,18 @@
     gap: 16px;
 }
 
+.chat-header-mascot {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+.chat-header-mascot-svg {
+    width: 46px;
+    height: 46px;
+    filter: drop-shadow(0 2px 6px rgba(180, 110, 130, 0.25));
+}
+
 .back-btn {
     background: rgba(255, 255, 255, 0.2);
     border: 2px solid rgba(255, 255, 255, 0.3);
@@ -511,6 +523,155 @@
     border-radius: 0;
 }
 
+/* ── Safety: crisis & support harness variants ──────────────────────────── */
+.response-harness--crisis {
+    border-left: 4px solid #e07a8a;
+    border-radius: 18px;
+}
+
+.response-harness--crisis .harness-acknowledge {
+    background: #fff5f6;
+    border-color: #f5ccd2;
+}
+
+.response-harness--crisis .harness-explore {
+    background: #fff5f6;
+    border-color: #f5ccd2;
+}
+
+.harness-try--crisis {
+    background: rgba(224, 122, 138, 0.1);
+    border: 1px solid rgba(224, 122, 138, 0.3);
+    border-radius: 4px;
+}
+
+.harness-try--crisis .harness-label {
+    color: #c0384d;
+    font-size: 0.75rem;
+}
+
+.response-harness--support {
+    border-left: 3px solid #6f9fc0;
+}
+
+/* ── Crisis resource card ─────────────────────────────────────────────────── */
+.crisis-resource-card {
+    margin: 8px 0 16px 52px;
+    background: linear-gradient(135deg, #fff5f6 0%, #fff0f4 100%);
+    border: 1.5px solid #f0b8c4;
+    border-radius: 16px;
+    padding: 16px 18px;
+    max-width: 70%;
+    box-shadow: 0 4px 16px rgba(224, 122, 138, 0.15);
+    animation: slideInMessage 0.4s ease;
+}
+
+.crisis-card-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.crisis-card-icon {
+    font-size: 1.1rem;
+}
+
+.crisis-card-title {
+    font-weight: 700;
+    font-size: 0.9rem;
+    color: #8b2a3c;
+}
+
+.crisis-card-contacts {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.crisis-contact-btn {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 14px;
+    border-radius: 10px;
+    text-decoration: none;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.crisis-contact-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.crisis-contact-btn--primary {
+    background: #c0384d;
+    color: #fff;
+}
+
+.crisis-contact-btn--secondary {
+    background: #5a7fb0;
+    color: #fff;
+}
+
+.crisis-contact-btn--urgent {
+    background: rgba(192, 56, 77, 0.08);
+    border: 1px solid rgba(192, 56, 77, 0.25);
+    color: #8b2a3c;
+}
+
+.crisis-contact-num {
+    font-weight: 800;
+    font-size: 1.05rem;
+    min-width: 54px;
+    letter-spacing: 0.02em;
+}
+
+.crisis-contact-label {
+    font-size: 0.78rem;
+    line-height: 1.35;
+    opacity: 0.92;
+}
+
+.crisis-card-note {
+    font-size: 0.8rem;
+    color: #8b5a65;
+    font-style: italic;
+    margin: 0;
+}
+
+/* ── Support nudge ────────────────────────────────────────────────────────── */
+.support-nudge {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    margin: 4px 0 14px 52px;
+    padding: 10px 14px;
+    background: rgba(111, 159, 192, 0.08);
+    border-left: 3px solid #6f9fc0;
+    border-radius: 0 8px 8px 0;
+    font-size: 0.83rem;
+    color: var(--text-gray);
+    max-width: 65%;
+    animation: slideInMessage 0.4s ease;
+}
+
+.support-nudge-icon {
+    flex-shrink: 0;
+    margin-top: 1px;
+}
+
+.support-nudge-link {
+    color: #5a8fb0;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.support-nudge-link:hover {
+    text-decoration: underline;
+}
+
 /* Typing Indicator */
 .typing-indicator {
     display: none;
@@ -892,7 +1053,7 @@
     border-radius: 50%;
     background: linear-gradient(135deg, var(--primary-peach), var(--primary-blush));
     box-shadow: 0 10px 24px rgb(189 23 86);
-    transition: top 1s linear, left 1s linear, background 0.4s ease;
+    transition: background 0.4s ease;
 }
 
 .breathing-visualizer[data-complete="true"] .breathing-dot {
@@ -1226,7 +1387,7 @@
     background: #e8a898;
     border: 1px solid rgba(207, 143, 127, 0.65);
     box-shadow: 0 0 20px rgba(255, 249, 196, 0.65), 0 8px 18px rgba(62, 39, 35, 0.15);
-    transition: top 4s ease-in-out, left 4s ease-in-out, background 2.4s ease, box-shadow 2.4s ease;
+    transition: background 2.4s ease, box-shadow 2.4s ease;
 }
 
 .breathing-visualizer[data-complete="true"] .breathing-dot {

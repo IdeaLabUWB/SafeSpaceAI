@@ -78,61 +78,79 @@ function toggleSoundCloudWidget() {
 
 window.toggleSoundCloudWidget = toggleSoundCloudWidget;
 
-document.addEventListener('DOMContentLoaded', function () {
+function toggleCollapse() {
     const player = document.getElementById('floating-player');
-    const header = document.getElementById('floating-header');
-    const closeBtn = document.getElementById('floating-close');
+    player.classList.toggle('collapsed');
+}
 
-    player.addEventListener('click', function (e) {
-        // Prevent header drag from triggering toggle
-        if (isDragging) return;
-    
-        // Optional: ignore clicks on iframe area
-        if (e.target.tagName.toLowerCase() === 'iframe') return;
-    
+window.toggleCollapse = toggleCollapse;
+
+document.addEventListener('DOMContentLoaded', function () {
+    const player      = document.getElementById('floating-player');
+    const header      = document.getElementById('floating-header');
+    const collapseBtn = document.getElementById('floating-collapse');
+    const closeBtn    = document.getElementById('floating-close');
+
+    // Collapse button — flip chevron, animate the container shut/open.
+    collapseBtn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        toggleCollapse();
+    });
+
+    // Close button — fully hide the player.
+    closeBtn.addEventListener('click', function (e) {
+        e.stopPropagation();
         toggleSoundCloudWidget();
     });
-    
-    // Close button
-    closeBtn.addEventListener('click', function () {
-        toggleSoundCloudWidget();
+
+    // Clicking the header title area also collapses/expands (skip if it was a drag).
+    header.addEventListener('click', function (e) {
+        if (e.target.closest('button')) return; // handled by the buttons above
+        if (wasDrag) return;                     // ignore drag-release clicks
+        toggleCollapse();
     });
 
-    // Dragging logic
-    let isDragging = false;
-    let offsetX, offsetY;
+    // Dragging logic — tracks movement so a drag-release doesn't trigger collapse.
+    let wasDrag = false;
+    let dragStartX, dragStartY, offsetX, offsetY;
 
     header.addEventListener('mousedown', function (e) {
-        isDragging = true;
+        if (e.target.closest('button')) return; // don't drag when clicking buttons
+        wasDrag = false;
+        dragStartX = e.clientX;
+        dragStartY = e.clientY;
         offsetX = e.clientX - player.offsetLeft;
         offsetY = e.clientY - player.offsetTop;
         header.style.cursor = 'grabbing';
     });
 
     document.addEventListener('mousemove', function (e) {
-        if (!isDragging) return;
-    
+        // Only move if a mousedown on the header started the drag.
+        if (offsetX === undefined) return;
+
+        const dx = e.clientX - dragStartX;
+        const dy = e.clientY - dragStartY;
+        if (!wasDrag && Math.sqrt(dx * dx + dy * dy) > 4) {
+            wasDrag = true; // threshold: 4 px movement = it's a drag, not a click
+        }
+
+        if (!wasDrag) return;
+
         let newLeft = e.clientX - offsetX;
-        let newTop = e.clientY - offsetY;
-    
+        let newTop  = e.clientY - offsetY;
+
         const playerRect = player.getBoundingClientRect();
-    
-        const maxLeft = window.innerWidth - playerRect.width;
-        const maxTop = window.innerHeight - playerRect.height;
-    
-        // Clamp values
-        newLeft = Math.max(0, Math.min(newLeft, maxLeft));
-        newTop = Math.max(0, Math.min(newTop, maxTop));
-    
-        player.style.left = newLeft + 'px';
-        player.style.top = newTop + 'px';
-    
+        newLeft = Math.max(0, Math.min(newLeft, window.innerWidth  - playerRect.width));
+        newTop  = Math.max(0, Math.min(newTop,  window.innerHeight - playerRect.height));
+
+        player.style.left   = newLeft + 'px';
+        player.style.top    = newTop  + 'px';
         player.style.bottom = 'auto';
-        player.style.right = 'auto';
+        player.style.right  = 'auto';
     });
 
     document.addEventListener('mouseup', function () {
-        isDragging = false;
+        offsetX = undefined;
         header.style.cursor = 'grab';
     });
 });

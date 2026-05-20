@@ -11,6 +11,7 @@ class ChatInterface {
         this.sendBtn = document.getElementById('sendBtn');
         this.backBtn = document.getElementById('backBtn');
         this.startChatBtn = document.getElementById('startChatBtn');
+        this.chatPreviewCard = document.getElementById('chatPreviewCard');
         this.breathingExerciseBtn = document.getElementById('breathingExerciseBtn');
         this.breathingModal = document.getElementById('breathingModal');
         this.breathingCloseBtn = document.getElementById('breathingCloseBtn');
@@ -36,9 +37,12 @@ class ChatInterface {
             ],
             cycleTarget: 4,
             currentPhaseIndex: 0,
-            remaining: 4,
+            remaining: 4,      // countdown display (whole seconds)
             cycle: 1,
-            intervalId: null,
+            intervalId: null,  // legacy — no longer used
+            rafId: null,       // requestAnimationFrame handle
+            phaseStartTime: null,  // performance.now() when current phase began
+            phaseElapsed: 0,       // seconds elapsed when paused (for seamless resume)
             isRunning: false
         };
         
@@ -56,9 +60,26 @@ class ChatInterface {
     
     setupEventListeners() {
         // Start Chat button
-        this.startChatBtn.addEventListener('click', () => {
-            this.openChat();
-        });
+        if (this.startChatBtn) {
+            this.startChatBtn.addEventListener('click', () => {
+                this.openChat();
+            });
+        }
+
+        if (this.chatPreviewCard) {
+            this.chatPreviewCard.setAttribute('role', 'button');
+            this.chatPreviewCard.setAttribute('tabindex', '0');
+            this.chatPreviewCard.addEventListener('click', (event) => {
+                if (event.target.closest('button, input, textarea, a')) return;
+                this.openChat();
+            });
+            this.chatPreviewCard.addEventListener('keydown', (event) => {
+                if (event.key === 'Enter' || event.key === ' ') {
+                    event.preventDefault();
+                    this.openChat();
+                }
+            });
+        }
 
         if (this.breathingExerciseBtn) {
             this.breathingExerciseBtn.addEventListener('click', () => {
@@ -67,9 +88,11 @@ class ChatInterface {
         }
         
         // Back button
-        this.backBtn.addEventListener('click', () => {
-            this.closeChat();
-        });
+        if (this.backBtn) {
+            this.backBtn.addEventListener('click', () => {
+                this.closeChat();
+            });
+        }
 
         if (this.breathingCloseBtn) {
             this.breathingCloseBtn.addEventListener('click', () => {
@@ -105,9 +128,11 @@ class ChatInterface {
         });
         
         // Send button
-        this.sendBtn.addEventListener('click', () => {
-            this.sendMessage();
-        });
+        if (this.sendBtn) {
+            this.sendBtn.addEventListener('click', () => {
+                this.sendMessage();
+            });
+        }
 
         if (this.micBtn) {
             this.micBtn.addEventListener('click', () => {
@@ -116,12 +141,14 @@ class ChatInterface {
         }
         
         // Enter key to send
-        this.messageInput.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter' && !e.shiftKey) {
-                e.preventDefault();
-                this.sendMessage();
-            }
-        });
+        if (this.messageInput) {
+            this.messageInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    this.sendMessage();
+                }
+            });
+        }
         
         // Quick response buttons
         document.addEventListener('click', (e) => {
@@ -132,12 +159,15 @@ class ChatInterface {
         });
         
         // Auto-hide quick responses after first message
-        this.messageInput.addEventListener('input', () => {
-            this.hideQuickResponses();
-        });
+        if (this.messageInput) {
+            this.messageInput.addEventListener('input', () => {
+                this.hideQuickResponses();
+            });
+        }
     }
     
     setupAutoResize() {
+        if (!this.messageInput) return;
         this.messageInput.addEventListener('input', () => {
             this.messageInput.style.height = 'auto';
             this.messageInput.style.height = this.messageInput.scrollHeight + 'px';
@@ -201,17 +231,32 @@ class ChatInterface {
     }
     
     openChat() {
+        if (!this.chatContainer || !this.dashboardContainer) return;
         this.dashboardContainer.style.display = 'none';
         this.chatContainer.classList.add('active');
-        this.messageInput.focus();
+        this.messageInput?.focus();
         
         this.chatContainer.style.animation = 'fadeIn 0.3s ease';
+    }
+
+    openChatWithMessage(message = '') {
+        this.openChat();
+        const text = message.trim();
+        if (!text || !this.messageInput) return;
+
+        window.setTimeout(() => {
+            this.messageInput.value = text;
+            this.messageInput.dispatchEvent(new Event('input'));
+            this.sendMessage();
+        }, 80);
     }
     
     closeChat() {
         this.stopVoiceInput();
-        this.chatContainer.classList.remove('active');
-        this.dashboardContainer.style.display = 'block';
+        this.chatContainer?.classList.remove('active');
+        if (this.dashboardContainer) {
+            this.dashboardContainer.style.display = '';
+        }
     }
 
     openBreathingExercise() {
@@ -248,20 +293,33 @@ class ChatInterface {
     startBreathingExercise() {
         this.stopBreathingTimer();
         this.breathingState.isRunning = true;
+        // Resume from wherever the phase was paused (phaseElapsed = 0 for a fresh start).
+        this.breathingState.phaseStartTime =
+            performance.now() - this.breathingState.phaseElapsed * 1000;
         if (this.breathingToggleBtn) {
             this.breathingToggleBtn.textContent = 'Pause';
         }
         this.updateBreathingUI();
-
-        this.breathingState.intervalId = window.setInterval(() => {
-            this.advanceBreathingExercise();
-        }, 1000);
+        this.breathingState.rafId = requestAnimationFrame(() => this._tickBreathing());
     }
 
     stopBreathingTimer() {
+        if (this.breathingState.rafId) {
+            cancelAnimationFrame(this.breathingState.rafId);
+            this.breathingState.rafId = null;
+        }
+        // Legacy interval guard (should never fire, but safe to keep)
         if (this.breathingState.intervalId) {
-            window.clearInterval(this.breathingState.intervalId);
+            clearInterval(this.breathingState.intervalId);
             this.breathingState.intervalId = null;
+        }
+        // Snapshot elapsed so we can resume from the exact same spot.
+        if (this.breathingState.phaseStartTime !== null) {
+            const phase = this.getCurrentBreathingPhase();
+            this.breathingState.phaseElapsed = Math.min(
+                (performance.now() - this.breathingState.phaseStartTime) / 1000,
+                phase.seconds
+            );
         }
         this.breathingState.isRunning = false;
     }
@@ -271,20 +329,48 @@ class ChatInterface {
         this.breathingState.currentPhaseIndex = 0;
         this.breathingState.cycle = 1;
         this.breathingState.remaining = this.breathingState.phases[0].seconds;
+        this.breathingState.phaseStartTime = null;
+        this.breathingState.phaseElapsed = 0;
         if (this.breathingToggleBtn) {
             this.breathingToggleBtn.textContent = 'Pause';
         }
         this.updateBreathingUI();
     }
 
-    advanceBreathingExercise() {
-        this.breathingState.remaining -= 1;
+    // ---- rAF-based breathing engine ----
 
-        if (this.breathingState.remaining > 0) {
-            this.updateBreathingUI();
+    /** Called every animation frame while the exercise is running. */
+    _tickBreathing() {
+        if (!this.breathingState.isRunning) return;
+
+        const phase = this.getCurrentBreathingPhase();
+        const elapsed = (performance.now() - this.breathingState.phaseStartTime) / 1000;
+        const phaseDuration = phase.seconds;
+
+        // Move dot continuously using real elapsed time.
+        const fraction = Math.min(elapsed / phaseDuration, 1);
+        this._updateDotFromFraction(fraction, phase);
+
+        // Countdown display: only re-render when the whole-second value changes.
+        const newRemaining = Math.max(0, Math.ceil(phaseDuration - elapsed));
+        if (newRemaining !== this.breathingState.remaining) {
+            this.breathingState.remaining = newRemaining;
+            if (this.breathingCount) {
+                this.breathingCount.textContent = newRemaining;
+            }
+        }
+
+        // Phase complete — advance.
+        if (elapsed >= phaseDuration) {
+            this._advanceToNextPhase();
             return;
         }
 
+        this.breathingState.rafId = requestAnimationFrame(() => this._tickBreathing());
+    }
+
+    /** Transition to the next phase (or complete the session). */
+    _advanceToNextPhase() {
         const phaseCount = this.breathingState.phases.length;
         const completedCycle = this.breathingState.currentPhaseIndex === phaseCount - 1;
 
@@ -299,13 +385,43 @@ class ChatInterface {
                 }
                 return;
             }
-
             this.breathingState.cycle += 1;
         }
 
-        this.breathingState.currentPhaseIndex = (this.breathingState.currentPhaseIndex + 1) % phaseCount;
-        this.breathingState.remaining = this.getCurrentBreathingPhase().seconds;
+        this.breathingState.currentPhaseIndex =
+            (this.breathingState.currentPhaseIndex + 1) % phaseCount;
+        const newPhase = this.getCurrentBreathingPhase();
+        this.breathingState.remaining = newPhase.seconds;
+        this.breathingState.phaseElapsed = 0;
+        this.breathingState.phaseStartTime = performance.now();
         this.updateBreathingUI();
+        this.breathingState.rafId = requestAnimationFrame(() => this._tickBreathing());
+    }
+
+    /** Compute and apply dot (x, y) from a 0–1 fraction through the given phase. */
+    _updateDotFromFraction(fraction, phase) {
+        if (!this.breathingDot || !this.breathingVisualizer) return;
+
+        const size = this.breathingVisualizer.clientWidth;
+        const dotSize = this.breathingDot.offsetWidth || 22;
+        const travel = Math.max(size - dotSize, 0);
+
+        let x = 0;
+        let y = 0;
+        if (phase.key === 'inhale') {
+            x = travel * fraction;
+        } else if (phase.key === 'hold-1') {
+            x = travel;
+            y = travel * fraction;
+        } else if (phase.key === 'exhale') {
+            x = travel * (1 - fraction);
+            y = travel;
+        } else if (phase.key === 'hold-2') {
+            y = travel * (1 - fraction);
+        }
+
+        this.breathingDot.style.left = `${x}px`;
+        this.breathingDot.style.top  = `${y}px`;
     }
 
     getCurrentBreathingPhase() {
@@ -347,38 +463,20 @@ class ChatInterface {
     updateBreathingDot(isComplete = false) {
         if (!this.breathingDot || !this.breathingVisualizer) return;
 
-        const phase = this.getCurrentBreathingPhase();
-        const size = this.breathingVisualizer.clientWidth;
-        const dotSize = this.breathingDot.offsetWidth || 22;
-        const travel = Math.max(size - dotSize, 0);
-
         if (isComplete) {
             this.breathingDot.style.left = '0px';
-            this.breathingDot.style.top = '0px';
+            this.breathingDot.style.top  = '0px';
             return;
         }
 
-        const elapsedFraction = (phase.seconds - this.breathingState.remaining) / phase.seconds;
-        let x = 0;
-        let y = 0;
-
-        if (phase.key === 'inhale') {
-            x = travel * elapsedFraction;
-        } else if (phase.key === 'hold-1') {
-            x = travel;
-            y = travel * elapsedFraction;
-        } else if (phase.key === 'exhale') {
-            x = travel * (1 - elapsedFraction);
-            y = travel;
-        } else if (phase.key === 'hold-2') {
-            y = travel * (1 - elapsedFraction);
-        }
-
-        this.breathingDot.style.left = `${x}px`;
-        this.breathingDot.style.top = `${y}px`;
+        // Static snapshot: used when paused or at reset (rAF handles the running case).
+        const phase    = this.getCurrentBreathingPhase();
+        const fraction = Math.min(this.breathingState.phaseElapsed / phase.seconds, 1);
+        this._updateDotFromFraction(fraction, phase);
     }
     
     sendMessage() {
+        if (this.isTyping) return;
         const message = this.messageInput.value.trim();
         if (!message) return;
 
@@ -396,6 +494,7 @@ class ChatInterface {
         
         // Show typing indicator
         this.showTypingIndicator();
+        this.setSendingState(true);
         
         this.callRagApi(message);
     }
@@ -472,6 +571,7 @@ class ChatInterface {
             }
 
             this.hideTypingIndicator();
+            this.setSendingState(false);
 
             if (!response.ok) {
                 let detail = `Something went wrong (${response.status}).`;
@@ -485,13 +585,15 @@ class ChatInterface {
                 return;
             }
 
+            const safetyLevel = data.safety_level ?? 'safe';
             if (data.sections) {
-                this.addBotMessage(data.sections);
+                this.addBotMessage(data.sections, safetyLevel);
             } else {
                 this.addMessage(data.reply ?? 'No reply from the assistant.', 'bot');
             }
         } catch (err) {
             this.hideTypingIndicator();
+            this.setSendingState(false);
             const reason = err && err.message ? err.message : String(err);
             const isNetwork =
                 /failed to fetch|networkerror|load failed|aborted/i.test(reason) ||
@@ -509,13 +611,23 @@ class ChatInterface {
         }
     }
 
+    setSendingState(isSending) {
+        if (this.sendBtn) {
+            this.sendBtn.disabled = isSending;
+            this.sendBtn.setAttribute('aria-busy', isSending ? 'true' : 'false');
+        }
+        if (this.messageInput) {
+            this.messageInput.disabled = isSending;
+        }
+    }
+
     
     sendQuickResponse(response) {
         this.messageInput.value = response;
         this.sendMessage();
     }
     
-    addBotMessage(sections) {
+    addBotMessage(sections, safetyLevel = 'safe') {
         const messageDiv = document.createElement('div');
         messageDiv.className = 'message bot-message';
 
@@ -530,13 +642,15 @@ class ChatInterface {
         messageContent.className = 'message-content';
 
         const bubble = document.createElement('div');
-        bubble.className = 'message-bubble response-harness';
+        bubble.className = 'message-bubble response-harness'
+            + (safetyLevel === 'crisis'  ? ' response-harness--crisis'  : '')
+            + (safetyLevel === 'support' ? ' response-harness--support' : '');
 
         const sectionDefs = [
             { key: 'acknowledge', cls: 'harness-acknowledge', prefix: '🌿 ' },
             { key: 'explore',     cls: 'harness-explore' },
             { key: 'reframe',     cls: 'harness-reframe' },
-            { key: 'try_this',    cls: 'harness-try',        label: '✨ Try this' },
+            { key: 'try_this',    cls: safetyLevel === 'crisis' ? 'harness-try harness-try--crisis' : 'harness-try', label: safetyLevel === 'crisis' ? '🆘 Please do this now' : '✨ Try this' },
             { key: 'question',    cls: 'harness-question',   prefix: '💬 ' },
         ];
 
@@ -579,13 +693,55 @@ class ChatInterface {
         messageDiv.appendChild(messageContent);
 
         this.chatMessages.appendChild(messageDiv);
-        this.scrollToBottom();
+
+        if (safetyLevel === 'crisis')  this.addCrisisCard();
+        if (safetyLevel === 'support') this.addSupportNudge();
 
         this.messageHistory.push({
             content: Object.values(sections).filter(Boolean).join(' '),
             sender: 'bot',
             timestamp: new Date().toISOString()
         });
+    }
+
+    addCrisisCard() {
+        const card = document.createElement('div');
+        card.className = 'crisis-resource-card';
+        card.setAttribute('role', 'alert');
+        card.innerHTML = `
+            <div class="crisis-card-header">
+                <span class="crisis-card-icon">❤️</span>
+                <span class="crisis-card-title">Real support is available right now</span>
+            </div>
+            <div class="crisis-card-contacts">
+                <a href="tel:988" class="crisis-contact-btn crisis-contact-btn--primary">
+                    <span class="crisis-contact-num">988</span>
+                    <span class="crisis-contact-label">Suicide &amp; Crisis Lifeline · Call or Text · 24/7</span>
+                </a>
+                <a href="sms:741741?body=HELLO" class="crisis-contact-btn crisis-contact-btn--secondary">
+                    <span class="crisis-contact-num">741741</span>
+                    <span class="crisis-contact-label">Crisis Text Line · Text HELLO · Free &amp; Confidential</span>
+                </a>
+                <a href="tel:911" class="crisis-contact-btn crisis-contact-btn--urgent">
+                    <span class="crisis-contact-num">911</span>
+                    <span class="crisis-contact-label">Emergency Services · If you are in immediate danger</span>
+                </a>
+            </div>
+            <p class="crisis-card-note">These are real people trained to help. You deserve that support.</p>
+        `;
+        this.chatMessages.appendChild(card);
+    }
+
+    addSupportNudge() {
+        const nudge = document.createElement('div');
+        nudge.className = 'support-nudge';
+        nudge.innerHTML = `
+            <span class="support-nudge-icon">💙</span>
+            <span>If things feel heavier than usual, you can always reach a counsellor at
+                <a href="tel:988" class="support-nudge-link">988</a> — free and confidential.
+            </span>
+        `;
+        this.chatMessages.appendChild(nudge);
     }
 
     addMessage(content, sender) {
@@ -623,7 +779,9 @@ class ChatInterface {
         messageDiv.appendChild(messageContent);
         
         this.chatMessages.appendChild(messageDiv);
-        this.scrollToBottom();
+        if (sender === 'user') {
+            this.scrollToBottom();
+        }
         
         // Store message in history
         this.messageHistory.push({

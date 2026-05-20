@@ -1,6 +1,7 @@
 import os
 import re
 import time
+import importlib
 from pathlib import Path
 
 from fastapi import FastAPI, HTTPException, Request
@@ -10,6 +11,8 @@ from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 from dotenv import load_dotenv
+
+importlib.import_module("truststore").inject_into_ssl()
 
 import google.generativeai as genai
 
@@ -35,7 +38,14 @@ def _sections_to_plaintext(sections: dict) -> str:
 # ---------------- ENV ----------------
 _BASE_DIR = Path(__file__).resolve().parent
 _CLIENT_DIR = _BASE_DIR.parent / "client"
-load_dotenv(_BASE_DIR / ".env")
+_PROJECT_DIR = _BASE_DIR.parent
+
+# Local development keeps .env at the repo root; server/.env still works for deploys.
+load_dotenv(_PROJECT_DIR / ".env")
+load_dotenv(_BASE_DIR / ".env", override=True)
+
+# Avoid runtime SSL failures when tiktoken tries to download OpenAI's tokenizer file.
+os.environ.setdefault("TIKTOKEN_CACHE_DIR", str(_PROJECT_DIR / ".tiktoken-cache"))
 
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
@@ -45,6 +55,9 @@ OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 PORT = int(os.getenv("PORT", 3001))
 FRONTEND_ORIGIN = os.getenv("FRONTEND_ORIGIN", "http://localhost:5500")
 GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-2.5-flash-lite")
+# Fallback model used automatically when the primary hits a 429 rate limit.
+# Set to "" in .env to disable fallback behaviour.
+GEMINI_FALLBACK_MODEL = os.getenv("GEMINI_FALLBACK_MODEL", "")
 
 if not GEMINI_API_KEY:
     raise ValueError("Missing GEMINI_API_KEY in .env")
@@ -52,7 +65,8 @@ if not GEMINI_API_KEY:
 if not OPENAI_API_KEY:
     raise ValueError("Missing OPENAI_API_KEY in .env")
 
-genai.configure(api_key=GEMINI_API_KEY)
+# REST avoids gRPC certificate-store issues on Windows/Anaconda environments.
+genai.configure(api_key=GEMINI_API_KEY, transport="rest")
 
 # ---------------- FASTAPI ----------------
 app = FastAPI()
@@ -172,7 +186,7 @@ def _retrieve_docs(user_query: str):
             status_code=503,
             detail=(
                 "Retrieval failed (embeddings or vector DB). "
-                "Confirm OPENAI_API_KEY in server/.env and that db/chroma_db exists. "
+                "Confirm OPENAI_API_KEY in .env and that server/db/chroma_db exists. "
                 f"({type(e).__name__}: {e})"
             ),
         ) from e
@@ -201,6 +215,73 @@ def _gemini_output_text(response) -> str:
         return ""
 
 
+# ---------------- SAFETY GUARDRAILS ----------------
+
+_CRISIS_RE = re.compile(
+    r"\b("
+    r"suicid\w*"
+    r"|kill\s+(my|him|her|them)\s*self"
+    r"|end\s+(my|this)\s+life"
+    r"|take\s+my\s+(own\s+)?life"
+    r"|end\s+it\s+all"
+    r"|(don'?t|do\s+not)\s+want\s+to\s+(live|be\s+alive|exist)"
+    r"|want\s+to\s+die"
+    r"|wish\s+I\s+(was|were)\s+dead"
+    r"|better\s+off\s+dead"
+    r"|no\s+reason\s+to\s+(live|be\s+here)"
+    r"|self[\s\-]?harm"
+    r"|cut(ting)?\s+(my)?self"
+    r"|hurt(ing)?\s+(my)?self"
+    r")\b",
+    re.I,
+)
+
+_SUPPORT_RE = re.compile(
+    r"\b("
+    r"hopeless|helpless|worthless|useless"
+    r"|(can'?t|cannot)\s+(go\s+on|do\s+this\s+anymore|keep\s+going)"
+    r"|give\s+up|giving\s+up|no\s+point"
+    r"|nobody\s+cares|no\s+one\s+cares"
+    r"|completely\s+alone|all\s+alone|so\s+alone"
+    r"|being\s+(abused|hurt|hit)|domestic\s+violence"
+    r")\b",
+    re.I,
+)
+
+_CRISIS_SECTIONS: dict[str, str] = {
+    "acknowledge": (
+        "What you're sharing matters deeply, and I'm really glad you said something. "
+        "You don't have to face this alone."
+    ),
+    "explore": (
+        "Right now, your safety is the only thing that matters. "
+        "A trained crisis counselor can help in ways I can't — please reach out to them."
+    ),
+    "reframe": "",
+    "try_this": (
+        "Call or text 988 (Suicide & Crisis Lifeline) — free, available 24/7, completely confidential. "
+        "If you're in immediate danger, please call 911."
+    ),
+    "question": "",
+}
+
+_SUPPORT_PROMPT_NOTE = (
+    "\nSAFETY NOTE: The user's message contains signals of significant distress "
+    "(hopelessness, isolation, or possible harm). Stay in the CONNECT stage. "
+    "Prioritise warmth and validation. Do not rush to reframing. "
+    "Gently mention that professional support is available.\n"
+)
+
+
+def _safety_level(text: str) -> str:
+    """Return 'crisis', 'support', or 'safe' based on message content."""
+    if _CRISIS_RE.search(text):
+        return "crisis"
+    if _SUPPORT_RE.search(text):
+        return "support"
+    return "safe"
+
+
 # ---------------- RAG ENDPOINT ----------------
 @app.get("/healthz")
 def healthz():
@@ -212,6 +293,17 @@ def rag(query: Query):
     user_query = (query.userMessage or "").strip()
     if not user_query:
         raise HTTPException(status_code=400, detail="userMessage is required")
+
+    safety = _safety_level(user_query)
+
+    # Crisis path: skip RAG and Gemini entirely — respond with a fixed, human-authored message.
+    if safety == "crisis":
+        return {
+            "raw": "",
+            "sections": _CRISIS_SECTIONS,
+            "reply": _sections_to_plaintext(_CRISIS_SECTIONS),
+            "safety_level": "crisis",
+        }
 
     docs = _retrieve_docs(user_query)
     context = "\n\n".join(
@@ -225,7 +317,8 @@ def rag(query: Query):
         )
         history_text = f"\nPrevious conversation:\n{history_text}\n"
 
-    model = genai.GenerativeModel(GEMINI_MODEL)
+    # Support path: inject a prompt note to keep the model in CONNECT stage.
+    safety_prompt_note = _SUPPORT_PROMPT_NOTE if safety == "support" else ""
 
     prompt = f""" You are SafeSpace AI, a supportive companion trained in Cognitive Behavioral Therapy (CBT) techniques.
 
@@ -276,55 +369,77 @@ RULES
 - Context relevance: use retrieved context ONLY if it concretely matches the user's specific situation.
   If unsure, ignore the context entirely.
 
-{history_text}
+{safety_prompt_note}{history_text}
 Retrieved context (use only if directly relevant):
 {context}
 
 User: {user_query}
 """
 
-    max_retries = 3
-    for attempt in range(max_retries):
-        try:
-            response = model.generate_content(prompt)
-            raw_text = _gemini_output_text(response)
-            sections = parse_sections(raw_text)
-            return {
-                "raw": raw_text,
-                "sections": sections,
-                "reply": _sections_to_plaintext(sections),
-            }
-        except HTTPException:
-            raise
-        except Exception as e:
-            msg = str(e)
-            is_quota = (
-                "429" in msg
-                or "quota" in msg.lower()
-                or "RESOURCE_EXHAUSTED" in msg
-                or "rate" in msg.lower()
-            )
-            if is_quota and attempt < max_retries - 1:
-                delay = _parse_retry_seconds(msg)
-                time.sleep(delay)
-                continue
-            if is_quota:
-                raise HTTPException(
-                    status_code=429,
-                    detail="Gemini API rate limit reached. Please wait a moment and try again, or check your quota at https://ai.google.dev/gemini-api/docs/rate-limits",
-                )
-            if (
-                "403" in msg
-                or "401" in msg
-                or "permission denied" in msg.lower()
-                or "api key" in msg.lower()
-                or "leaked" in msg.lower()
-            ):
-                raise HTTPException(
-                    status_code=401,
-                    detail="Gemini API rejected the request. Replace GEMINI_API_KEY in server/.env with a valid, active key.",
-                )
-            raise HTTPException(status_code=502, detail=f"Model error: {msg}")
+    def _call_model(model_name: str):
+        return genai.GenerativeModel(model_name).generate_content(prompt)
+
+    def _is_quota_error(msg: str) -> bool:
+        return (
+            "429" in msg
+            or "quota" in msg.lower()
+            or "RESOURCE_EXHAUSTED" in msg
+            or "rate" in msg.lower()
+        )
+
+    # Try primary model with one retry on transient errors,
+    # then fall back to GEMINI_FALLBACK_MODEL on 429.
+    models_to_try = [GEMINI_MODEL]
+    if GEMINI_FALLBACK_MODEL and GEMINI_FALLBACK_MODEL != GEMINI_MODEL:
+        models_to_try.append(GEMINI_FALLBACK_MODEL)
+
+    last_exc: Exception | None = None
+    for model_name in models_to_try:
+        for attempt in range(2):  # 1 retry per model for transient errors
+            try:
+                response = _call_model(model_name)
+                raw_text = _gemini_output_text(response)
+                sections = parse_sections(raw_text)
+                return {
+                    "raw": raw_text,
+                    "sections": sections,
+                    "reply": _sections_to_plaintext(sections),
+                    "safety_level": safety,
+                    **({"_model": model_name} if model_name != GEMINI_MODEL else {}),
+                }
+            except HTTPException:
+                raise
+            except Exception as e:
+                last_exc = e
+                msg = str(e)
+                if _is_quota_error(msg):
+                    # 429 on primary → skip straight to fallback, no sleep
+                    break
+                if attempt == 0:
+                    # Non-quota transient error: one short wait then retry same model
+                    time.sleep(2)
+                    continue
+                break  # second attempt also failed, move on
+
+    # All models exhausted — surface the right error
+    msg = str(last_exc) if last_exc else ""
+    if _is_quota_error(msg):
+        raise HTTPException(
+            status_code=429,
+            detail="The AI service is busy right now. Please try again in a moment.",
+        )
+    if (
+        "403" in msg
+        or "401" in msg
+        or "permission denied" in msg.lower()
+        or "api key" in msg.lower()
+        or "leaked" in msg.lower()
+    ):
+        raise HTTPException(
+            status_code=401,
+            detail="Gemini API rejected the request. Replace GEMINI_API_KEY in .env with a valid, active key.",
+        )
+    raise HTTPException(status_code=502, detail=f"Model error: {msg}")
 
 
 if _CLIENT_DIR.exists():

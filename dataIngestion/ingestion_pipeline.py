@@ -1,13 +1,23 @@
 import os
 from pathlib import Path
+import truststore
+
+truststore.inject_into_ssl()
+
 from langchain_core.documents import Document
 from langchain_text_splitters import CharacterTextSplitter
 from langchain_openai import OpenAIEmbeddings
 from langchain_chroma import Chroma
 from dotenv import load_dotenv
 
-# Load API key from server .env (shared config for ingestion)
-load_dotenv(Path(__file__).resolve().parents[1] / "server" / ".env")
+PROJECT_DIR = Path(__file__).resolve().parents[1]
+
+# Local development keeps .env at the repo root; server/.env still works for deploys.
+load_dotenv(PROJECT_DIR / ".env")
+load_dotenv(PROJECT_DIR / "server" / ".env", override=True)
+
+# Avoid runtime SSL failures when tiktoken tries to download OpenAI's tokenizer file.
+os.environ.setdefault("TIKTOKEN_CACHE_DIR", str(PROJECT_DIR / ".tiktoken-cache"))
 
 def classify_content_type(filename: str, content: str) -> str:
     """

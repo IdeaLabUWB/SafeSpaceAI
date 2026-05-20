@@ -858,6 +858,10 @@ const MOOD_AFFIRMATIONS = {
     ]
 };
 
+function updateDashboardMoodBackground(moodIdx) {
+    document.body.classList.toggle('is-calm-mood', moodIdx <= 2);
+}
+
 let activeMoodIdx = 2;
 
 function setupMoodSlider() {
@@ -896,6 +900,7 @@ function setupMoodSlider() {
         if (Number.isNaN(idx)) return;
         activeMoodIdx = idx;
         const mood = MOODS[idx];
+        updateDashboardMoodBackground(idx);
 
         emojis.forEach(el => {
             const elIdx = parseInt(el.dataset.idx, 10);

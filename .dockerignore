@@ -1,20 +1,31 @@
+# ── Secrets — never bake these into the image ──
+.env
+.env.*
+server/.env
+server/.env.*
+
+# ── Python artifacts ──
+.venv
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache
+.mypy_cache
+*.egg-info
+dist/
+build/
+
+# ── Node (server has a stray node_modules) ──
+node_modules
+server/node_modules
+
+# ── Dev / repo files not needed at runtime ──
 .git
 .gitignore
-.gcloudignore
-.env
-server/.env
-
-__pycache__/
-**/__pycache__/
-*.py[cod]
-.pytest_cache/
-.mypy_cache/
-.venv/
-venv/
-
-server/node_modules/
-node_modules/
-npm-debug.log*
-
-*.log
-*.sqlite3
+screenshots/
+make_screenshot.py
+*.md
+samconfig.toml
+template.yaml
+.tiktoken-cache

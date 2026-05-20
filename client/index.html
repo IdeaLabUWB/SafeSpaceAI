@@ -56,6 +56,49 @@
                     <button class="back-btn" id="backBtn" aria-label="Back to dashboard">
                         <span class="back-icon" aria-hidden="true">←</span>
                     </button>
+                    <div class="chat-header-mascot" aria-hidden="true">
+                        <svg class="chat-header-mascot-svg" viewBox="0 0 140 140" xmlns="http://www.w3.org/2000/svg">
+                            <defs>
+                                <radialGradient id="hdrBunnyBody" cx="38%" cy="34%" r="78%">
+                                    <stop offset="0%"   stop-color="#fff7e8"/>
+                                    <stop offset="40%"  stop-color="#ffe2cd"/>
+                                    <stop offset="78%"  stop-color="#f5bcb8"/>
+                                    <stop offset="100%" stop-color="#d895a4"/>
+                                </radialGradient>
+                                <linearGradient id="hdrBunnyEar" x1="50%" y1="100%" x2="50%" y2="0%">
+                                    <stop offset="0%"   stop-color="#f29ab2"/>
+                                    <stop offset="100%" stop-color="#ffe1d4"/>
+                                </linearGradient>
+                                <radialGradient id="hdrBunnyCheek" cx="50%" cy="50%" r="55%">
+                                    <stop offset="0%"   stop-color="rgba(255,154,178,0.8)"/>
+                                    <stop offset="100%" stop-color="rgba(255,154,178,0)"/>
+                                </radialGradient>
+                                <radialGradient id="hdrBunnyEyeShine" cx="35%" cy="30%" r="60%">
+                                    <stop offset="0%"  stop-color="#fff" stop-opacity="0.95"/>
+                                    <stop offset="60%" stop-color="#fff" stop-opacity="0"/>
+                                </radialGradient>
+                            </defs>
+                            <g>
+                                <path d="M 42,46 C 34,28 32,8 44,4 C 54,6 56,28 52,46 Z" fill="url(#hdrBunnyBody)" stroke="rgba(180,110,130,0.36)" stroke-width="0.7"/>
+                                <path d="M 45,42 C 41,28 41,12 46,8 C 51,12 51,28 49,42 Z" fill="url(#hdrBunnyEar)" opacity="0.92"/>
+                            </g>
+                            <g>
+                                <path d="M 98,46 C 106,28 108,8 96,4 C 86,6 84,28 88,46 Z" fill="url(#hdrBunnyBody)" stroke="rgba(180,110,130,0.36)" stroke-width="0.7"/>
+                                <path d="M 95,42 C 99,28 99,12 94,8 C 89,12 89,28 91,42 Z" fill="url(#hdrBunnyEar)" opacity="0.92"/>
+                            </g>
+                            <ellipse cx="70" cy="82" rx="44" ry="38" fill="url(#hdrBunnyBody)" stroke="rgba(180,110,130,0.32)" stroke-width="1"/>
+                            <ellipse cx="44" cy="84" rx="7" ry="5" fill="url(#hdrBunnyCheek)"/>
+                            <ellipse cx="92" cy="84" rx="7" ry="5" fill="url(#hdrBunnyCheek)"/>
+                            <ellipse cx="56" cy="72" rx="4.5" ry="6.5" fill="#3a2438"/>
+                            <ellipse cx="56" cy="72" rx="4.5" ry="6.5" fill="url(#hdrBunnyEyeShine)"/>
+                            <circle  cx="57.5" cy="69" r="1.5" fill="#fff"/>
+                            <ellipse cx="80" cy="72" rx="4.5" ry="6.5" fill="#3a2438"/>
+                            <ellipse cx="80" cy="72" rx="4.5" ry="6.5" fill="url(#hdrBunnyEyeShine)"/>
+                            <circle  cx="81.5" cy="69" r="1.5" fill="#fff"/>
+                            <path d="M 64,82 Q 68,80 72,82 Q 70.5,87 68,87.5 Q 65.5,87 64,82 Z" fill="#ee7d92"/>
+                            <path d="M 68,87.5 L 68,90 M 68,90 Q 65,92 63.5,91 M 68,90 Q 71,92 72.5,91" stroke="#5a2b3e" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+                        </svg>
+                    </div>
                     <div class="chat-title">
                         <h1>SafeSpace AI</h1>
                         <p class="chat-subtitle">Your mindful companion</p>
@@ -70,8 +113,8 @@
             </div>
         </div>
 
-        <!-- Cozy meadow mascot banner -->
-        <div class="chat-mascot-banner" aria-hidden="true">
+        <!-- Mascot moved to header — banner hidden -->
+        <div class="chat-mascot-banner" aria-hidden="true" style="display:none">
             <div class="chat-mascot-bloom"></div>
             <div class="chat-mascot" id="chatMascot">
                 <svg class="chat-mascot-svg" viewBox="0 0 140 140" xmlns="http://www.w3.org/2000/svg">
@@ -209,12 +252,6 @@
                         <p class="app-subtitle">Your mindful companion for anxiety support</p>
                     </div>
                 </div>
-                <div class="header-right">
-                    <div class="header-welcome-text">
-                        <span class="header-welcome-title">Welcome back</span>
-                        <span class="header-welcome-sub">Take a deep breath, you've got this.</span>
-                    </div>
-                </div>
             </div>
         </header>
 
@@ -247,7 +284,7 @@
                     </div>
                 </div>
 
-                <!-- ── BREATHING + AFFIRMATION ROW (left col, row 2) ── -->
+                <!-- ── BREATHING ROW (left col, row 2) ── -->
                 <div class="breathaff-row">
                     <!-- Breathing Visualizer card -->
                     <div class="dashboard-card progress-card">
@@ -276,30 +313,12 @@
                             </div>
                         </div>
                     </div>
-
-                    <!-- Daily Affirmation card -->
-                    <div class="dashboard-card affirmations-card">
-                        <div class="card-header">
-                            <h2>Daily Affirmation</h2>
-                        </div>
-                        <div class="affirmation-single">
-                            <span class="affirmation-quote-icon">❝</span>
-                            <p class="affirmation-text-display" id="affirmationDisplay">You are safe in this moment.</p>
-                            <button class="affirmation-more-link" id="affirmationMoreBtn">More Affirmations</button>
-                        </div>
-                        <!-- Hidden list used by original JS — kept for compat -->
-                        <div class="affirmation-list" id="affirmationList" aria-live="polite" style="display:none">
-                            <div class="affirmation-item">I am capable of finding peace.</div>
-                            <div class="affirmation-item">My feelings are valid.</div>
-                            <div class="affirmation-item">I have the strength to navigate this day.</div>
-                        </div>
-                    </div>
                 </div>
 
                 <!-- ── RESOURCES CARD (left col, row 3) ── -->
                 <div class="dashboard-card resources-card">
                     <div class="card-header">
-                        <h2>Helpful Resources</h2>
+                        <h2>Healing Sounds</h2>
                     </div>
                     <div class="resource-links">
                         <a href="#" class="resource-link" id="calmingSoundsLink">
@@ -314,8 +333,11 @@
                     <!-- Floating SoundCloud Widget -->
                     <div id="floating-player" class="floating-player hidden">
                         <div id="floating-header" class="floating-header">
-                            <span>🎵 Music Therapy</span>
-                            <button id="floating-close">✕</button>
+                            <span class="floating-title">🎵 Music Therapy</span>
+                            <div class="floating-header-btns">
+                                <button id="floating-collapse" aria-label="Collapse player" title="Collapse">▾</button>
+                                <button id="floating-close" aria-label="Close player" title="Close">✕</button>
+                            </div>
                         </div>
                         <div id="soundcloud-container"></div>
                     </div>
@@ -342,7 +364,6 @@
 
                     <div class="chat-quick-chips">
                         <button class="chat-quick-chip" data-response="I'm feeling anxious">I'm feeling anxious</button>
-                        <button class="chat-quick-chip" data-response="I need to talk">I need to talk</button>
                         <button class="chat-quick-chip" data-response="Can you help me relax?">Can you help me relax?</button>
                     </div>
 
@@ -384,10 +405,19 @@
             </div><!-- /.dashboard-grid -->
         </main>
 
-        <!-- ── REMEMBER BAR ── -->
-        <div class="remember-bar" aria-label="Reminder message">
-            <span class="remember-bar-heart">❤</span>
-            <p class="remember-bar-text"><strong>Remember:</strong> It's okay not to be okay. You're not alone.</p>
+        <!-- ── AFFIRMATION BAR ── -->
+        <div class="remember-bar affirmation-remember-bar" aria-label="Daily affirmation">
+            <div class="affirmation-single">
+                <span class="affirmation-quote-icon">❝</span>
+                <p class="affirmation-text-display" id="affirmationDisplay">You are safe in this moment.</p>
+                <button class="affirmation-more-link" id="affirmationMoreBtn">More Affirmations</button>
+            </div>
+            <!-- Hidden list used by original JS — kept for compat -->
+            <div class="affirmation-list" id="affirmationList" aria-live="polite" style="display:none">
+                <div class="affirmation-item">I am capable of finding peace.</div>
+                <div class="affirmation-item">My feelings are valid.</div>
+                <div class="affirmation-item">I have the strength to navigate this day.</div>
+            </div>
         </div>
     </div><!-- /.dashboard-container -->
 
@@ -437,18 +467,15 @@
     <script>
     (function() {
         function openChatWithMessage(msg) {
-            const startBtn = document.getElementById('startChatBtn');
-            if (startBtn) startBtn.click();
-            if (msg) {
-                setTimeout(function() {
-                    const input = document.getElementById('messageInput');
-                    if (input) {
-                        input.value = msg;
-                        const sendBtn = document.getElementById('sendBtn');
-                        if (sendBtn) sendBtn.click();
-                    }
-                }, 350);
+            if (window.chatInterface && typeof window.chatInterface.openChatWithMessage === 'function') {
+                window.chatInterface.openChatWithMessage(msg || '');
+                return;
             }
+
+            const chatContainer = document.getElementById('chatContainer');
+            const dashboardContainer = document.getElementById('dashboardContainer');
+            if (dashboardContainer) dashboardContainer.style.display = 'none';
+            if (chatContainer) chatContainer.classList.add('active');
         }
 
         document.addEventListener('DOMContentLoaded', function() {
@@ -532,16 +559,10 @@
                 });
             }
 
-            // Calming sounds resource link
-            var soundsLink = document.getElementById('calmingSoundsLink');
-            if (soundsLink) {
-                soundsLink.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    if (typeof window.toggleSoundCloudWidget === 'function') {
-                        window.toggleSoundCloudWidget();
-                    }
-                });
-            }
+            // Note: #calmingSoundsLink is already handled by script.js
+            // (handleResourceClick → toggleSoundCloudWidget). No second
+            // listener needed here — adding one would double-toggle and
+            // immediately close the player after every click.
         });
     })();
     </script>

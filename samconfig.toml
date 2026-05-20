@@ -1,0 +1,20 @@
+# AWS SAM configuration for SafeSpace AI
+# Run `sam deploy --guided` once to confirm settings, then `sam deploy` for all future deploys.
+# Teardown: sam delete --stack-name safespace-ai
+
+version = 0.1
+
+[default.build.parameters]
+cached   = true   # only rebuild layers that changed
+parallel = true
+
+[default.deploy.parameters]
+stack_name          = "safespace-ai"
+resolve_s3          = true          # SAM creates/manages the S3 bucket for artifacts
+resolve_image_repos = true          # SAM creates/manages the ECR repo for the image
+capabilities        = "CAPABILITY_IAM"
+region              = "us-east-1"   # change to your preferred region
+confirm_changeset   = false         # skip the "Deploy this changeset? [y/N]" prompt
+
+# API keys are injected at deploy time via --parameter-overrides so they
+# are never stored in this file.  See the deploy commands in the README.
