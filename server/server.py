@@ -41,7 +41,7 @@ def parse_sections(text: str) -> dict:
 
 
 def _sections_to_plaintext(sections: dict) -> str:
-    parts = [v for v in sections.values() if v]
+    parts = [v for v in sections.values() if v and isinstance(v, str)]
     return "\n\n".join(parts)
 
 
